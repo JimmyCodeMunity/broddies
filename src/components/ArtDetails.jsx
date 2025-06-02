@@ -180,7 +180,7 @@ const ArtDetails = ({ prod }) => {
                         class="peer sr-only"
                         checked
                       />
-                      <p class={`${prod.category === cat.categoryname ? "peer-checked:bg-red-500 text-white":"peer-checked:bg-white text-black"} rounded-lg border border-black px-6 py-2 font-bold`}>
+                      <p class={`${prod.category === cat.categoryname ? "peer-checked:bg-black text-black":"peer-checked:bg-white text-black"} rounded-lg border border-black px-6 py-2 font-bold`}>
                         {cat.categoryname}
                       </p>
                     </label>
