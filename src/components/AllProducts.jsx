@@ -16,7 +16,7 @@ const AllProducts = () => {
                                             {
                                                 arts?.map((prod, index) => {
                                                     return (
-                                                        <Link to={`artview/${prod._id}`}
+                                                        <Link to={`/artview/${prod._id}`}
                                                             state={{ prod }}
                                                             class="mx-auto sm:mr-0 group cursor-pointer lg:mx-auto bg-white transition-all duration-500">
                                                             <div class="">
