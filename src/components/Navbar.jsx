@@ -22,7 +22,7 @@ export const NavbarDemo = () => {
   ];
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { userdata, isUserAuthenticated } = useContext(AuthContext);
+  const { userdata, isUserAuthenticated ,logout} = useContext(AuthContext);
   console.log("user", userdata);
 
   return (
@@ -38,6 +38,11 @@ export const NavbarDemo = () => {
                 <Link to="/login">
                   <NavbarButton variant="secondary">
                     {userdata?.username}
+                  </NavbarButton>
+                </Link>
+                <Link onClick={logout}>
+                  <NavbarButton variant="secondary">
+                    Logout
                   </NavbarButton>
                 </Link>
               </>
