@@ -1,0 +1,89 @@
+import { Link } from "react-router-dom";
+import {
+  Navbar,
+  NavBody,
+  NavItems,
+  MobileNav,
+  NavbarLogo,
+  NavbarButton,
+  MobileNavHeader,
+  MobileNavToggle,
+  MobileNavMenu,
+} from "./ui/NavbarComponents";
+import { useContext, useState } from "react";
+import { AuthContext } from "../context/AuthContext";
+
+export const NavbarDemo = () => {
+  const navItems = [
+    { name: "Home", link: "/" },
+    { name: "Shop", link: "/view-all-art" },
+    { name: "Blog", link: "#contact" },
+    { name: "Cart", link: "/cart" },
+  ];
+
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const {userdata} = useContext(AuthContext)
+  console.log("user",userdata)
+
+  return (
+    <div className="relative w-full">
+      <Navbar>
+        {/* Desktop Navigation */}
+        <NavBody>
+          <NavbarLogo />
+          <NavItems items={navItems} />
+          <div className="flex items-center gap-4">
+            <Link to="/login">
+              <NavbarButton variant="secondary">Login</NavbarButton>
+            </Link>
+            <Link to="/register">
+              <NavbarButton variant="primary">Sign Up</NavbarButton>
+            </Link>
+          </div>
+        </NavBody>
+
+        {/* Mobile Navigation */}
+        <MobileNav>
+          <MobileNavHeader>
+            <NavbarLogo />
+            <MobileNavToggle
+              isOpen={isMobileMenuOpen}
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            />
+          </MobileNavHeader>
+
+          <MobileNavMenu isOpen={isMobileMenuOpen}>
+            {navItems.map((item, idx) => (
+              <Link
+                key={`mobile-link-${idx}`}
+                to={item.link}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="relative text-neutral-600 dark:text-neutral-300"
+              >
+                <span className="block">{item.name}</span>
+              </Link>
+            ))}
+            <div className="flex w-full flex-col gap-4">
+              <NavbarButton
+                onClick={() => setIsMobileMenuOpen(false)}
+                variant="primary"
+                className="w-full"
+              >
+                Login
+              </NavbarButton>
+              <NavbarButton
+                onClick={() => setIsMobileMenuOpen(false)}
+                variant="primary"
+                className="w-full"
+              >
+                Book a call
+              </NavbarButton>
+            </div>
+          </MobileNavMenu>
+        </MobileNav>
+      </Navbar>
+
+      {/* <DummyContent /> */}
+    </div>
+  );
+};
