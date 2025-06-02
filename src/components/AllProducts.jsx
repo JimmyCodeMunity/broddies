@@ -14,7 +14,7 @@ const AllProducts = () => {
                     </h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                                             {
-                                                arts?.slice(0, 4).map((prod, index) => {
+                                                arts?.map((prod, index) => {
                                                     return (
                                                         <Link to={`artview/${prod._id}`}
                                                             state={{ prod }}
