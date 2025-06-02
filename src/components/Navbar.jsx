@@ -22,8 +22,8 @@ export const NavbarDemo = () => {
   ];
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const {userdata} = useContext(AuthContext)
-  console.log("user",userdata)
+  const { userdata, isUserAuthenticated } = useContext(AuthContext);
+  console.log("user", userdata);
 
   return (
     <div className="relative w-full">
@@ -33,12 +33,24 @@ export const NavbarDemo = () => {
           <NavbarLogo />
           <NavItems items={navItems} />
           <div className="flex items-center gap-4">
-            <Link to="/login">
-              <NavbarButton variant="secondary">Login</NavbarButton>
-            </Link>
-            <Link to="/register">
-              <NavbarButton variant="primary">Sign Up</NavbarButton>
-            </Link>
+            {isUserAuthenticated ? (
+              <>
+                <Link to="/login">
+                  <NavbarButton variant="secondary">
+                    {userdata?.username}
+                  </NavbarButton>
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link to="/login">
+                  <NavbarButton variant="secondary">Login</NavbarButton>
+                </Link>
+                <Link to="/register">
+                  <NavbarButton variant="primary">Sign Up</NavbarButton>
+                </Link>
+              </>
+            )}
           </div>
         </NavBody>
 
