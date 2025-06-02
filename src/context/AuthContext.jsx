@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/v1/user/createuser",
+        "https://broddie.menthealventures.com/api/v1/user/createuser",
         { email,password,address,phone,username }
       );
       console.log(email,password,address,phone,username)
@@ -70,7 +70,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/v1/user/userlogin",
+        "https://broddie.menthealventures.com/api/v1/user/userlogin",
         { email, password }
       );
       const data = response.data;
@@ -98,7 +98,7 @@ export const AuthProvider = ({ children }) => {
     try {
       if (token) {
         const response = await axios.post(
-          `http://localhost:5000/api/v1/user/getuserdata`,
+          `https://broddie.menthealventures.com/api/v1/user/getuserdata`,
           { token }
         );
         const userData = response.data;

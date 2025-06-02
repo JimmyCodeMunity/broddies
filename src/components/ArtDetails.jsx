@@ -78,7 +78,7 @@ const ArtDetails = ({ prod }) => {
                   <div class="max-w-xl overflow-hidden rounded-lg">
                     <img
                       class="h-full w-full max-w-full object-cover"
-                      src={`http://localhost:5000/${prod?.image}`}
+                      src={`https://broddie.menthealventures.com/${prod?.image}`}
                       alt=""
                     />
                   </div>
