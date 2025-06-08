@@ -1,8 +1,5 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
 import { Route, Routes } from "react-router-dom";
+import "./App.css";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import ProductView from "./pages/ProductView";
@@ -12,12 +9,11 @@ import RegisterPage from "./pages/RegisterPage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ProtectedRoutes from "./context/ProtectedRoutes";
+import { CartProvider } from "./context/CartContext";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <>
+    <CartProvider>
       <Routes>
         <Route element={<ProtectedRoutes />}>
           <Route path="/artview/:id" index element={<ProductView />} />
@@ -29,7 +25,7 @@ function App() {
         <Route path="/register" index element={<RegisterPage />} />
       </Routes>
       <ToastContainer />
-    </>
+    </CartProvider>
   );
 }
 
