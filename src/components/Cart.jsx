@@ -4,13 +4,24 @@ import { AuthContext } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 
 const Cart = () => {
-  const { cartItems, cartTotal, removeFromCart, updateQuantity } = useContext(CartContext);
+  const { cartItems, cartTotal, removeFromCart, updateQuantity, isLoading } = useContext(CartContext);
   const { isUserAuthenticated } = useContext(AuthContext);
 
   useEffect(() => {
     console.log("Cart Items:", cartItems);
     console.log("Cart Total:", cartTotal);
   }, [cartItems, cartTotal]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+        <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your cart...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!isUserAuthenticated) {
     return (
@@ -28,7 +39,7 @@ const Cart = () => {
     );
   }
 
-  if (cartItems.length === 0) {
+  if (!cartItems?.length) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
         <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
@@ -45,34 +56,38 @@ const Cart = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
-      <div className="max-w-4xl mx-auto px-4">
+    <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
         <h1 className="text-2xl font-bold mb-8">Shopping Cart ({cartItems.length} items)</h1>
         
         <div className="space-y-4">
           {cartItems.map((item) => (
-            <div key={item._id} className="bg-white rounded-lg shadow p-6">
-              <div className="flex items-center gap-4">
+            <div key={item._id} className="bg-white rounded-lg shadow p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                 <img
                   src={`https://broddie.menthealventures.com/${item.image}`}
                   alt={item.artname}
-                  className="w-24 h-24 object-cover rounded"
+                  className="w-full sm:w-24 h-24 object-cover rounded"
                 />
-                <div className="flex-1">
+                <div className="flex-1 w-full">
                   <h3 className="font-semibold text-lg">{item.artname}</h3>
-                  <p className="text-gray-600 text-sm">{item.desc}</p>
-                  <div className="mt-2 flex items-center gap-4">
+                  <p className="text-gray-600 text-sm line-clamp-2">{item.desc}</p>
+                  <div className="mt-2 flex flex-wrap items-center gap-4">
                     <div className="flex items-center border rounded">
                       <button
                         onClick={() => updateQuantity(item._id, item.quantity - 1)}
                         className="px-3 py-1 hover:bg-gray-100"
+                        aria-label="Decrease quantity"
                       >
                         -
                       </button>
-                      <span className="px-3 py-1 border-x">{item.quantity}</span>
+                      <span className="px-3 py-1 border-x min-w-[40px] text-center">
+                        {item.quantity}
+                      </span>
                       <button
                         onClick={() => updateQuantity(item._id, item.quantity + 1)}
                         className="px-3 py-1 hover:bg-gray-100"
+                        aria-label="Increase quantity"
                       >
                         +
                       </button>
@@ -81,6 +96,7 @@ const Cart = () => {
                     <button
                       onClick={() => removeFromCart(item._id)}
                       className="text-red-500 hover:text-red-700"
+                      aria-label="Remove item"
                     >
                       Remove
                     </button>
@@ -108,7 +124,10 @@ const Cart = () => {
               </div>
             </div>
           </div>
-          <button className="w-full mt-4 bg-black text-white py-2 px-4 rounded hover:bg-gray-800 transition-colors">
+          <button 
+            className="w-full mt-4 bg-black text-white py-2 px-4 rounded hover:bg-gray-800 transition-colors disabled:bg-gray-400"
+            disabled={!cartItems.length}
+          >
             Proceed to Checkout
           </button>
         </div>
