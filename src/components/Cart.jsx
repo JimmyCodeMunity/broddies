@@ -1,9 +1,29 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { CartContext } from '../context/CartContext';
+import { AuthContext } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 
 const Cart = () => {
   const { cartItems, cartTotal, removeFromCart, updateQuantity } = useContext(CartContext);
+  const { isUserAuthenticated, userdata } = useContext(AuthContext);
+
+  useEffect(() => {
+    console.log("Cart Items:", cartItems);
+    console.log("Cart Total:", cartTotal);
+    console.log("User Auth Status:", isUserAuthenticated);
+    console.log("User Data:", userdata);
+  }, [cartItems, cartTotal, isUserAuthenticated, userdata]);
+
+  if (!isUserAuthenticated) {
+    return (
+      <div className='bg-white min-h-[60vh] flex flex-col items-center justify-center'>
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Please login to view your cart</h2>
+        <Link to="/login" className="inline-flex items-center justify-center rounded-md border-2 border-transparent bg-gray-900 px-12 py-3 text-base font-bold text-white transition-all duration-200 ease-in-out hover:bg-gray-800">
+          Login
+        </Link>
+      </div>
+    );
+  }
 
   if (cartItems.length === 0) {
     return (
@@ -15,7 +35,7 @@ const Cart = () => {
       </div>
     );
   }
-
+    
   return (
     <div className='bg-white min-h-[60vh] py-12'>
       <section className="relative z-10 after:contents-[''] after:absolute after:z-0 after:h-full xl:after:w-1/3 after:top-0 after:right-0 after:bg-gray-50">

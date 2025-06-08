@@ -1,12 +1,29 @@
 import React, { useContext } from "react";
 import { ApiContext } from "../context/ApiContext";
 import { CartContext } from "../context/CartContext";
+import { toast } from "react-toastify";
 
 const ArtDetails = ({ prod }) => {
     const { categories } = useContext(ApiContext);
     const { addToCart } = useContext(CartContext);
-    console.log("cat",categories)
-    console.log("prodcat",prod.category)
+    
+    const handleAddToCart = () => {
+        console.log("Product being added to cart:", {
+            _id: prod._id,
+            artname: prod.artname,
+            price: prod.price,
+            image: prod.image,
+            desc: prod.desc
+        });
+        
+        if (!prod._id) {
+            console.error("Product ID is missing!");
+            toast.error("Unable to add item to cart");
+            return;
+        }
+        
+        addToCart(prod);
+    };
 
     return (
         <div className="bg-white w-full">
@@ -127,7 +144,7 @@ const ArtDetails = ({ prod }) => {
 
                                 <button
                                     type="button"
-                                    onClick={() => addToCart(prod)}
+                                    onClick={handleAddToCart}
                                     className="inline-flex items-center justify-center rounded-md border-2 border-transparent bg-gray-900 bg-none px-12 py-3 text-center text-base font-bold text-white transition-all duration-200 ease-in-out focus:shadow hover:bg-gray-800"
                                 >
                                     <svg

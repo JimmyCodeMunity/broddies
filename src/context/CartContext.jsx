@@ -13,11 +13,23 @@ export const CartProvider = ({ children }) => {
   useEffect(() => {
     const loadCart = () => {
       if (isUserAuthenticated && userdata) {
-        const savedCart = localStorage.getItem(`cart_${userdata._id}`);
+        const cartKey = `cart_${userdata._id}`;
+        console.log('Loading cart for user:', userdata._id);
+        const savedCart = localStorage.getItem(cartKey);
+        console.log('Saved cart from localStorage:', savedCart);
         if (savedCart) {
-          setCartItems(JSON.parse(savedCart));
+          try {
+            const parsedCart = JSON.parse(savedCart);
+            setCartItems(parsedCart);
+            console.log('Successfully loaded cart:', parsedCart);
+          } catch (error) {
+            console.error('Error parsing cart from localStorage:', error);
+            localStorage.removeItem(cartKey); // Clear invalid data
+            setCartItems([]);
+          }
         }
       } else {
+        console.log('No authenticated user, clearing cart');
         setCartItems([]);
       }
     };
@@ -25,14 +37,16 @@ export const CartProvider = ({ children }) => {
     loadCart();
   }, [isUserAuthenticated, userdata]);
 
-  // Update cart total whenever items change
+  // Update cart total and save to localStorage whenever items change
   useEffect(() => {
     const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     setCartTotal(total);
     
     // Save to localStorage if user is authenticated
     if (isUserAuthenticated && userdata) {
-      localStorage.setItem(`cart_${userdata._id}`, JSON.stringify(cartItems));
+      const cartKey = `cart_${userdata._id}`;
+      console.log('Saving cart to localStorage:', cartItems);
+      localStorage.setItem(cartKey, JSON.stringify(cartItems));
     }
   }, [cartItems, isUserAuthenticated, userdata]);
 
@@ -42,25 +56,35 @@ export const CartProvider = ({ children }) => {
       return;
     }
 
+    console.log('Adding item to cart:', item);
     setCartItems(prevItems => {
       const existingItem = prevItems.find(i => i._id === item._id);
       
       if (existingItem) {
-        return prevItems.map(i => 
+        console.log('Item already exists, updating quantity');
+        const updatedItems = prevItems.map(i => 
           i._id === item._id 
             ? { ...i, quantity: i.quantity + 1 }
             : i
         );
+        return updatedItems;
       }
 
-      return [...prevItems, { ...item, quantity: 1 }];
+      console.log('Adding new item to cart');
+      const newItems = [...prevItems, { ...item, quantity: 1 }];
+      return newItems;
     });
 
     toast.success('Item added to cart');
   };
 
   const removeFromCart = (itemId) => {
-    setCartItems(prevItems => prevItems.filter(item => item._id !== itemId));
+    console.log('Removing item from cart:', itemId);
+    setCartItems(prevItems => {
+      const updatedItems = prevItems.filter(item => item._id !== itemId);
+      console.log('Updated cart after removal:', updatedItems);
+      return updatedItems;
+    });
     toast.success('Item removed from cart');
   };
 
@@ -70,19 +94,24 @@ export const CartProvider = ({ children }) => {
       return;
     }
 
-    setCartItems(prevItems =>
-      prevItems.map(item =>
+    console.log('Updating quantity:', itemId, newQuantity);
+    setCartItems(prevItems => {
+      const updatedItems = prevItems.map(item =>
         item._id === itemId
           ? { ...item, quantity: newQuantity }
           : item
-      )
-    );
+      );
+      console.log('Updated cart after quantity change:', updatedItems);
+      return updatedItems;
+    });
   };
 
   const clearCart = () => {
+    console.log('Clearing cart');
     setCartItems([]);
     if (isUserAuthenticated && userdata) {
-      localStorage.removeItem(`cart_${userdata._id}`);
+      const cartKey = `cart_${userdata._id}`;
+      localStorage.removeItem(cartKey);
     }
   };
 
