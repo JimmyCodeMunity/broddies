@@ -10,22 +10,25 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ProtectedRoutes from "./context/ProtectedRoutes";
 import { CartProvider } from "./context/CartContext";
+import { ApiProvider } from "./context/ApiContext";
 
 function App() {
   return (
-    <CartProvider>
-      <Routes>
-        <Route element={<ProtectedRoutes />}>
-          <Route path="/artview/:id" index element={<ProductView />} />
-          <Route path="/view-all-art" index element={<AllArtPage />} />
-          <Route path="/cart" index element={<CartPage />} />
-        </Route>
-        <Route path="/" index element={<HomePage />} />
-        <Route path="/login" index element={<LoginPage />} />
-        <Route path="/register" index element={<RegisterPage />} />
-      </Routes>
-      <ToastContainer />
-    </CartProvider>
+    <ApiProvider>
+      <CartProvider>
+        <Routes>
+          <Route element={<ProtectedRoutes />}>
+            <Route path="/artview/:id" index element={<ProductView />} />
+            <Route path="/view-all-art" index element={<AllArtPage />} />
+            <Route path="/cart" index element={<CartPage />} />
+          </Route>
+          <Route path="/" index element={<HomePage />} />
+          <Route path="/login" index element={<LoginPage />} />
+          <Route path="/register" index element={<RegisterPage />} />
+        </Routes>
+        <ToastContainer />
+      </CartProvider>
+    </ApiProvider>
   );
 }
 

@@ -75,6 +75,13 @@ const ArtDetails = ({ prod }) => {
                                 {prod?.artname}
                             </h1>
 
+                            {/* Category Badge */}
+                            <div className="mt-4">
+                                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+                                    {categories.find(cat => cat._id === prod?.category)?.categoryname || 'Art'}
+                                </span>
+                            </div>
+
                             <div className="mt-3">
                                 <h2 className="sr-only">Product information</h2>
                                 <p className="text-3xl tracking-tight text-gray-900">
@@ -82,10 +89,34 @@ const ArtDetails = ({ prod }) => {
                                 </p>
                             </div>
 
+                            {/* Description Section */}
                             <div className="mt-6">
-                                <h3 className="sr-only">Description</h3>
-                                <div className="space-y-6 text-base text-gray-700">
-                                    {prod?.desc}
+                                <h3 className="text-lg font-semibold text-gray-900">Description</h3>
+                                <div className="mt-4 bg-gray-50 rounded-lg p-6 border border-gray-100">
+                                    <p className="text-base text-gray-700 leading-relaxed">
+                                        {prod?.desc}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Product Details */}
+                            <div className="mt-8">
+                                <h3 className="text-lg font-semibold text-gray-900">Product Details</h3>
+                                <div className="mt-4 space-y-4">
+                                    <div className="flex items-center">
+                                        <span className="text-gray-600 w-32">Category:</span>
+                                        <span className="text-gray-900 font-medium">
+                                            {categories.find(cat => cat._id === prod?.category)?.categoryname || 'Art'}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <span className="text-gray-600 w-32">Artist:</span>
+                                        <span className="text-gray-900 font-medium">{prod?.artist || 'Anonymous'}</span>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <span className="text-gray-600 w-32">Medium:</span>
+                                        <span className="text-gray-900 font-medium">{prod?.medium || 'Mixed Media'}</span>
+                                    </div>
                                 </div>
                             </div>
 
