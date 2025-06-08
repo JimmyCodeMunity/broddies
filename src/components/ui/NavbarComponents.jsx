@@ -163,7 +163,10 @@ export const NavbarLogo = () => (
       width={30}
       height={30}
     />
-    <span className="text-xl text-white">Broddie's Collection</span>
+    <div>
+      <span className="text-2xl text-white">Broddie's Collection</span>
+      <p className="text-sm text-white">Hold your own</p>
+    </div>
   </Link>
 );
 

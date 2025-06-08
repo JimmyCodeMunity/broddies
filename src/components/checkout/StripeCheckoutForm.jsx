@@ -9,7 +9,6 @@ const StripeCheckoutForm = ({ amount, cartItems, onSuccess }) => {
   const stripe = useStripe();
   const elements = useElements();
   const { userdata } = useContext(AuthContext);
-  const { clearCart } = useContext(CartContext);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -20,28 +19,8 @@ const StripeCheckoutForm = ({ amount, cartItems, onSuccess }) => {
 
     try {
       setIsProcessing(true);
-      
-      // Create PaymentIntent on the server
-      const response = await fetch('http://localhost:5000/api/v1/stripe/create-payment-intent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          amount,
-          currency: 'usd',
-          userId: userdata?._id,
-          cartItems
-        }),
-      });
 
-      if (!response.ok) {
-        throw new Error('Payment initialization failed');
-      }
-
-      const { paymentIntent, ephemeralKey, customer } = await response.json();
-
-      // Confirm the payment
+      // Confirm the payment and redirect to confirmation page
       const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
@@ -58,13 +37,11 @@ const StripeCheckoutForm = ({ amount, cartItems, onSuccess }) => {
         throw new Error(error.message);
       }
 
-      // If we get here, the payment was successful
-      clearCart();
-      onSuccess();
-      toast.success('Payment successful!');
+      // Don't handle success here - it will be handled in the confirmation page
+      // after the redirect and server verification
+      
     } catch (error) {
       toast.error(error.message || 'Payment failed');
-    } finally {
       setIsProcessing(false);
     }
   };
@@ -77,7 +54,7 @@ const StripeCheckoutForm = ({ amount, cartItems, onSuccess }) => {
           <div className="space-y-2">
             {cartItems.map((item) => (
               <div key={item._id} className="flex justify-between text-sm">
-                <span>{item.name} x {item.quantity}</span>
+                <span>{item.artname} x {item.quantity}</span>
                 <span>${(item.price * item.quantity).toFixed(2)}</span>
               </div>
             ))}

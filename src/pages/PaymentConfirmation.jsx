@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { CartContext } from '../context/CartContext';
 
 const PaymentConfirmation = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [status, setStatus] = useState('processing');
+  const { clearCart } = useContext(CartContext);
 
   useEffect(() => {
     const checkPaymentStatus = async () => {
@@ -15,7 +17,7 @@ const PaymentConfirmation = () => {
           throw new Error('No payment intent ID found');
         }
 
-        const response = await fetch('/api/checkout-complete', {
+        const response = await fetch('https://broddie.menthealventures.com/api/v1/stripe/checkout-complete', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -27,19 +29,21 @@ const PaymentConfirmation = () => {
 
         if (data.success) {
           setStatus('success');
-          toast.success('Payment completed successfully!');
+          clearCart(); // Clear the cart only after confirmed success
+          // toast.success('Payment completed successfully!');
         } else {
           setStatus('failed');
           toast.error(data.message || 'Payment failed');
         }
       } catch (error) {
+        console.error('Payment verification error:', error);
         setStatus('failed');
         toast.error('Failed to verify payment status');
       }
     };
 
     checkPaymentStatus();
-  }, [searchParams]);
+  }, [searchParams, clearCart]);
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
@@ -62,7 +66,7 @@ const PaymentConfirmation = () => {
             <h2 className="mt-4 text-xl font-semibold text-green-600">Payment Successful!</h2>
             <p className="mt-2 text-gray-600">Thank you for your purchase.</p>
             <button
-              onClick={() => navigate('/orders')}
+              onClick={() => navigate('/')}
               className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
               View Orders

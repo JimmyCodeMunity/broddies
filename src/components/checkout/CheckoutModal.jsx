@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { toast } from 'react-toastify';
@@ -8,11 +8,47 @@ import PaymentMethodCard from './PaymentMethodCard';
 import StripeCheckoutForm from './StripeCheckoutForm';
 
 // Replace with your Stripe publishable key
-const stripePromise = loadStripe('pk_test_51Oc4wRJE5eZbfcv0cFDOguSg9YFS8Bswru6JaXimoGk6NbBuBy2fUi8CKTjsaHPV7dlS1cTXJrd2mmPfrJg8WjEo00fuiP5l84');
+const stripePromise = loadStripe('pk_test_51Oc4wRJE5eZbfcv0ZZg8sqwprkiBtm3lOAHIcRIkKFEUEAfmKa0F4uNIDc936uUwpxC6X8zIdE5TcUmoY58PFP2f00RLpIZc54');
 
 const CheckoutModal = ({ isOpen, onClose }) => {
   const [selectedMethod, setSelectedMethod] = useState('stripe');
   const { cartTotal, cartItems } = useContext(CartContext);
+  const { userdata } = useContext(AuthContext);
+  const [clientSecret, setClientSecret] = useState('');
+
+  useEffect(() => {
+    // Create PaymentIntent as soon as the modal opens
+    if (isOpen && cartTotal > 0) {
+      const createPaymentIntent = async () => {
+        try {
+          const response = await fetch('https://broddie.menthealventures.com/api/v1/stripe/create-payment-intent', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              amount: cartTotal,
+              currency: 'usd',
+              userId: userdata?._id,
+              cartItems
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to create payment intent');
+          }
+
+          const data = await response.json();
+          setClientSecret(data.paymentIntent);
+        } catch (error) {
+          toast.error('Failed to initialize payment');
+          onClose();
+        }
+      };
+
+      createPaymentIntent();
+    }
+  }, [isOpen, cartTotal, userdata?._id, cartItems]);
 
   const paymentMethods = [
     {
@@ -34,6 +70,22 @@ const CheckoutModal = ({ isOpen, onClose }) => {
   };
 
   if (!isOpen) return null;
+
+  const options = {
+    clientSecret,
+    appearance: {
+      theme: 'stripe',
+      variables: {
+        colorPrimary: '#0570de',
+        colorBackground: '#ffffff',
+        colorText: '#30313d',
+        colorDanger: '#df1b41',
+        fontFamily: 'Ideal Sans, system-ui, sans-serif',
+        spacingUnit: '2px',
+        borderRadius: '4px',
+      },
+    },
+  };
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -76,14 +128,19 @@ const CheckoutModal = ({ isOpen, onClose }) => {
           </div>
 
           <div className="bg-gray-50 px-4 py-3">
-            {selectedMethod === 'stripe' ? (
-              <Elements stripe={stripePromise}>
+            {selectedMethod === 'stripe' && clientSecret ? (
+              <Elements stripe={stripePromise} options={options}>
                 <StripeCheckoutForm 
                   amount={cartTotal} 
                   cartItems={cartItems}
                   onSuccess={handleSuccess} 
                 />
               </Elements>
+            ) : selectedMethod === 'stripe' ? (
+              <div className="text-center py-4">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
+                <p className="mt-2 text-gray-600">Initializing payment...</p>
+              </div>
             ) : (
               <div className="text-center text-gray-500 py-4">
                 PayPal integration coming soon...

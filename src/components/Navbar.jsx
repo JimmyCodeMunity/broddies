@@ -93,7 +93,22 @@ export const NavbarDemo = () => {
                 )}
               </Link>
             ))}
-            <div className="flex w-full flex-col gap-4">
+            {isUserAuthenticated ? (
+              <>
+                <Link to="/login">
+                  <NavbarButton variant="secondary">
+                    {userdata?.username}
+                  </NavbarButton>
+                </Link>
+                <Link onClick={logout}>
+                  <NavbarButton variant="secondary">
+                    Logout
+                  </NavbarButton>
+                </Link>
+              </>
+            ) : (
+              <>
+              <div className="flex w-full flex-col gap-4">
               <NavbarButton
                 onClick={() => setIsMobileMenuOpen(false)}
                 variant="primary"
@@ -102,13 +117,16 @@ export const NavbarDemo = () => {
                 Login
               </NavbarButton>
               <NavbarButton
-                onClick={() => setIsMobileMenuOpen(false)}
+                // onClick={() => setIsMobileMenuOpen(false)}
+                onClick={logout}
                 variant="primary"
                 className="w-full"
               >
-                Book a call
+                Logout
               </NavbarButton>
-            </div>
+            </div></>
+            )}
+            
           </MobileNavMenu>
         </MobileNav>
       </Navbar>
