@@ -21,6 +21,13 @@ const CheckoutModal = ({ isOpen, onClose }) => {
     if (isOpen && cartTotal > 0) {
       const createPaymentIntent = async () => {
         try {
+          // Create condensed cart data with only essential information
+          const condensedCartItems = cartItems.map(item => ({
+            _id: item._id,
+            quantity: item.quantity,
+            price: parseFloat(item.price)
+          }));
+
           const response = await fetch('https://broddie.menthealventures.com/api/v1/stripe/create-payment-intent', {
             method: 'POST',
             headers: {
@@ -30,7 +37,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
               amount: cartTotal,
               currency: 'usd',
               userId: userdata?._id,
-              cartItems
+              cartItems: condensedCartItems // Send only essential cart data
             }),
           });
 
@@ -41,6 +48,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
           const data = await response.json();
           setClientSecret(data.paymentIntent);
         } catch (error) {
+          console.error('Payment initialization failed:', error);
           toast.error('Failed to initialize payment');
           onClose();
         }
@@ -89,7 +97,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+      <div className="flex min-h-screen items-center justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
         <div className="fixed inset-0 transition-opacity" aria-hidden="true">
           <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
         </div>
