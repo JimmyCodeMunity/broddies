@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { ApiContext } from "../context/ApiContext";
 import { CartContext } from "../context/CartContext";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 const ArtDetails = ({ prod }) => {
     const { categories } = useContext(ApiContext);
@@ -33,13 +34,13 @@ const ArtDetails = ({ prod }) => {
                         <ol role="list" className="flex items-center">
                             <li className="text-left">
                                 <div className="-m-1">
-                                    <a
-                                        href="/"
+                                    <Link
+                                        to="/"
                                         className="rounded-md p-1 text-sm font-medium text-gray-600 focus:text-gray-900 focus:shadow hover:text-gray-800"
                                     >
                                         {" "}
                                         Art{" "}
-                                    </a>
+                                    </Link>
                                 </div>
                             </li>
 
@@ -47,13 +48,13 @@ const ArtDetails = ({ prod }) => {
                                 <div className="flex items-center">
                                     <span className="mx-2 text-gray-400">/</span>
                                     <div className="-m-1">
-                                        <a
-                                            href="/view-all-art"
+                                        <Link
+                                            to="/view-all-art"
                                             className="rounded-md p-1 text-sm font-medium text-gray-600 focus:text-gray-900 focus:shadow hover:text-gray-800"
                                         >
                                             {" "}
                                             View{" "}
-                                        </a>
+                                        </Link>
                                     </div>
                                 </div>
                             </li>
@@ -62,14 +63,13 @@ const ArtDetails = ({ prod }) => {
                                 <div className="flex items-center">
                                     <span className="mx-2 text-gray-400">/</span>
                                     <div className="-m-1">
-                                        <a
-                                            href="#"
-                                            className="rounded-md p-1 text-sm font-medium text-gray-600 focus:text-gray-900 focus:shadow hover:text-gray-800"
+                                        <span
+                                            className="rounded-md p-1 text-sm font-medium text-gray-600"
                                             aria-current="page"
                                         >
                                             {" "}
                                             {prod?.artname}{" "}
-                                        </a>
+                                        </span>
                                     </div>
                                 </div>
                             </li>

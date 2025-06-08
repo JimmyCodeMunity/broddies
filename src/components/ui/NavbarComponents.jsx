@@ -68,9 +68,9 @@ export const NavItems = ({ items, className, onItemClick }) => {
       )}
     >
       {items.map((item, idx) => (
-        <a
+        <Link
           key={idx}
-          href={item.link}
+          to={item.link}
           onClick={onItemClick}
           onMouseEnter={() => setHovered(idx)}
           className="relative px-4 py-2 text-neutral-600 dark:text-neutral-300"
@@ -82,7 +82,7 @@ export const NavItems = ({ items, className, onItemClick }) => {
             />
           )}
           <span className="relative z-20">{item.name}</span>
-        </a>
+        </Link>
       ))}
     </motion.div>
   );
@@ -148,8 +148,8 @@ export const MobileNavToggle = ({ isOpen, onClick }) => {
 };
 
 export const NavbarLogo = () => (
-  <a
-    href="/"
+  <Link
+    to="/"
     className="relative z-20 flex items-center space-x-2 px-2 py-1 text-sm font-medium"
   >
     <img
@@ -159,12 +159,12 @@ export const NavbarLogo = () => (
       height={30}
     />
     <span className="text-xl text-white">Broddie's Collection</span>
-  </a>
+  </Link>
 );
 
 export const NavbarButton = ({
-  href,
-  as: Tag = "a",
+  to,
+  as: Tag = Link,
   children,
   className,
   variant = "primary",
@@ -184,7 +184,7 @@ export const NavbarButton = ({
 
   return (
     <Tag
-      href={href}
+      to={to}
       className={cn(base, variants[variant], className)}
       {...props}
     >
@@ -208,7 +208,7 @@ export default function NavbarWrapper() {
         <NavBody>
           <NavbarLogo />
           <NavItems items={items} onItemClick={() => setIsOpen(false)} />
-          <NavbarButton href="#get-started">Get Started</NavbarButton>
+          <NavbarButton to="#get-started">Get Started</NavbarButton>
         </NavBody>
 
         <MobileNav>
@@ -227,7 +227,7 @@ export default function NavbarWrapper() {
                 {item.name}
               </Link>
             ))}
-            <NavbarButton href="#get-started" variant="primary">
+            <NavbarButton to="#get-started" variant="primary">
               Get Started
             </NavbarButton>
           </MobileNavMenu>
