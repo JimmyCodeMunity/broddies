@@ -1,11 +1,13 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
+import CheckoutModal from './checkout/CheckoutModal';
 
 const Cart = () => {
   const { cartItems, cartTotal, removeFromCart, updateQuantity, isLoading } = useContext(CartContext);
   const { isUserAuthenticated } = useContext(AuthContext);
+  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
 
   useEffect(() => {
     console.log("Cart Items:", cartItems);
@@ -60,6 +62,14 @@ const Cart = () => {
   const shippingCost = 0; // You can modify this based on your shipping logic
   const total = subtotal + shippingCost;
 
+  const handleQuantityChange = (itemId, newQuantity) => {
+    if (newQuantity < 1) {
+      removeFromCart(itemId);
+    } else {
+      updateQuantity(itemId, newQuantity);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
@@ -80,7 +90,7 @@ const Cart = () => {
                   <div className="mt-2 flex flex-wrap items-center gap-4">
                     <div className="flex items-center border rounded">
                       <button
-                        onClick={() => updateQuantity(item._id, item.quantity - 1)}
+                        onClick={() => handleQuantityChange(item._id, item.quantity - 1)}
                         className="px-3 py-1 hover:bg-gray-100"
                         aria-label="Decrease quantity"
                       >
@@ -90,7 +100,7 @@ const Cart = () => {
                         {item.quantity}
                       </span>
                       <button
-                        onClick={() => updateQuantity(item._id, item.quantity + 1)}
+                        onClick={() => handleQuantityChange(item._id, item.quantity + 1)}
                         className="px-3 py-1 hover:bg-gray-100"
                         aria-label="Increase quantity"
                       >
@@ -132,11 +142,17 @@ const Cart = () => {
           <button 
             className="w-full mt-4 bg-black text-white py-2 px-4 rounded hover:bg-gray-800 transition-colors disabled:bg-gray-400"
             disabled={!cartItems.length}
+            onClick={() => setIsCheckoutModalOpen(true)}
           >
             Proceed to Checkout
           </button>
         </div>
       </div>
+
+      <CheckoutModal
+        isOpen={isCheckoutModalOpen}
+        onClose={() => setIsCheckoutModalOpen(false)}
+      />
     </div>
   );
 };

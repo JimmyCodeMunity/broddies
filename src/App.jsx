@@ -11,6 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import ProtectedRoutes from "./context/ProtectedRoutes";
 import { CartProvider } from "./context/CartContext";
 import { ApiProvider } from "./context/ApiContext";
+import PaymentConfirmation from './pages/PaymentConfirmation';
 
 function App() {
   return (
@@ -25,8 +26,19 @@ function App() {
           <Route path="/" index element={<HomePage />} />
           <Route path="/login" index element={<LoginPage />} />
           <Route path="/register" index element={<RegisterPage />} />
+          <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
         </Routes>
-        <ToastContainer />
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
       </CartProvider>
     </ApiProvider>
   );
