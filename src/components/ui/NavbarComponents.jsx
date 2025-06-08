@@ -1,10 +1,10 @@
 import React, { useRef, useState } from "react";
 import { cn } from "../../lib/utils";
 import {
-  motion,
   AnimatePresence,
   useScroll,
   useMotionValueEvent,
+  motion as m,
 } from "motion/react";
 import { Menu, XCircle } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -22,7 +22,7 @@ export const Navbar = ({ children, className }) => {
   });
 
   return (
-    <motion.div
+    <m.div
       ref={ref}
       className={cn("sticky inset-x-0 top-0 z-40 w-full", className)}
     >
@@ -31,13 +31,13 @@ export const Navbar = ({ children, className }) => {
           ? React.cloneElement(child, { visible })
           : child
       )}
-    </motion.div>
+    </m.div>
   );
 };
 
 export const NavBody = ({ children, className, visible }) => {
   return (
-    <motion.div
+    <m.div
       animate={{
         backdropFilter: visible ? "blur(10px)" : "none",
         boxShadow: visible
@@ -53,14 +53,14 @@ export const NavBody = ({ children, className, visible }) => {
       )}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 };
 
 export const NavItems = ({ items, className, onItemClick }) => {
   const [hovered, setHovered] = useState(null);
   return (
-    <motion.div
+    <m.div
       onMouseLeave={() => setHovered(null)}
       className={cn(
         "hidden flex-1 flex-row items-center justify-center space-x-4 text-sm text-zinc-600 lg:flex",
@@ -76,21 +76,26 @@ export const NavItems = ({ items, className, onItemClick }) => {
           className="relative px-4 py-2 text-neutral-600 dark:text-neutral-300"
         >
           {hovered === idx && (
-            <motion.div
+            <m.div
               layoutId="hovered"
               className="absolute inset-0 rounded-full bg-gray-100 dark:bg-neutral-800"
             />
           )}
           <span className="relative z-20">{item.name}</span>
+          {item.badge && (
+            <span className="absolute -top-2 -right-1 z-30 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+              {item.badge}
+            </span>
+          )}
         </Link>
       ))}
-    </motion.div>
+    </m.div>
   );
 };
 
 export const MobileNav = ({ children, className, visible }) => {
   return (
-    <motion.div
+    <m.div
       animate={{
         backdropFilter: visible ? "blur(10px)" : "none",
         boxShadow: visible
@@ -107,7 +112,7 @@ export const MobileNav = ({ children, className, visible }) => {
       )}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 };
 
@@ -123,7 +128,7 @@ export const MobileNavMenu = ({ children, className, isOpen }) => {
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -133,7 +138,7 @@ export const MobileNavMenu = ({ children, className, isOpen }) => {
           )}
         >
           {children}
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );
@@ -164,7 +169,6 @@ export const NavbarLogo = () => (
 
 export const NavbarButton = ({
   to,
-  as: Tag = Link,
   children,
   className,
   variant = "primary",
@@ -183,13 +187,13 @@ export const NavbarButton = ({
   };
 
   return (
-    <Tag
+    <Link
       to={to}
       className={cn(base, variants[variant], className)}
       {...props}
     >
       {children}
-    </Tag>
+    </Link>
   );
 };
 

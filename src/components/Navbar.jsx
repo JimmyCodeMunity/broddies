@@ -12,17 +12,25 @@ import {
 } from "./ui/NavbarComponents";
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { CartContext } from "../context/CartContext";
 
 export const NavbarDemo = () => {
+  const { cartItems } = useContext(CartContext);
+  const cartItemCount = cartItems?.length || 0;
+
   const navItems = [
     { name: "Home", link: "/" },
     { name: "Shop", link: "/view-all-art" },
     { name: "Blog", link: "#contact" },
-    { name: "Cart", link: "/cart" },
+    { 
+      name: "Cart", 
+      link: "/cart",
+      badge: cartItemCount > 0 ? cartItemCount : null
+    },
   ];
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { userdata, isUserAuthenticated ,logout} = useContext(AuthContext);
+  const { userdata, isUserAuthenticated, logout } = useContext(AuthContext);
   console.log("user", userdata);
 
   return (
@@ -78,6 +86,11 @@ export const NavbarDemo = () => {
                 className="relative text-neutral-600 dark:text-neutral-300"
               >
                 <span className="block">{item.name}</span>
+                {item.badge && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {item.badge}
+                  </span>
+                )}
               </Link>
             ))}
             <div className="flex w-full flex-col gap-4">

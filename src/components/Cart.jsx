@@ -55,6 +55,11 @@ const Cart = () => {
     );
   }
 
+  // Calculate subtotal and total
+  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const shippingCost = 0; // You can modify this based on your shipping logic
+  const total = subtotal + shippingCost;
+
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
@@ -111,16 +116,16 @@ const Cart = () => {
           <div className="space-y-2">
             <div className="flex justify-between">
               <span>Subtotal</span>
-              <span>${cartTotal.toFixed(2)}</span>
+              <span>${subtotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-gray-600">
               <span>Shipping</span>
-              <span>Calculated at checkout</span>
+              <span>{shippingCost === 0 ? 'Free' : `$${shippingCost.toFixed(2)}`}</span>
             </div>
             <div className="border-t pt-2 mt-2">
               <div className="flex justify-between font-semibold">
                 <span>Total</span>
-                <span>${cartTotal.toFixed(2)}</span>
+                <span>${total.toFixed(2)}</span>
               </div>
             </div>
           </div>

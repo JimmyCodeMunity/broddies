@@ -9,25 +9,33 @@ const STORAGE_PREFIX = 'art_cart_';
 export const CartProvider = ({ children }) => {
   const { isUserAuthenticated, userdata } = useContext(AuthContext);
   const userId = userdata?._id;
+  const [isLoading, setIsLoading] = useState(true);
   
+  // Initialize cart state from localStorage
   const [cartItems, setCartItems] = useState(() => {
-    // Initialize cart from localStorage if we have a userId
-    if (userId) {
-      try {
-        const savedCart = localStorage.getItem(`${STORAGE_PREFIX}${userId}`);
-        return savedCart ? JSON.parse(savedCart) : [];
-      } catch (error) {
-        console.error('Error loading initial cart:', error);
-        return [];
+    try {
+      // Check if we're in the browser environment
+      if (typeof window !== 'undefined') {
+        // If user is already authenticated, try to load their cart
+        const savedUserId = userdata?._id;
+        if (savedUserId) {
+          const savedCart = localStorage.getItem(`${STORAGE_PREFIX}${savedUserId}`);
+          if (savedCart) {
+            const parsedCart = JSON.parse(savedCart);
+            return Array.isArray(parsedCart) ? parsedCart : [];
+          }
+        }
       }
+      return [];
+    } catch (error) {
+      console.error('Error initializing cart:', error);
+      return [];
     }
-    return [];
   });
   
   const [cartTotal, setCartTotal] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
 
-  // Load cart when authentication state changes
+  // Load cart when authentication state or userId changes
   useEffect(() => {
     const loadCart = async () => {
       try {
@@ -41,7 +49,9 @@ export const CartProvider = ({ children }) => {
               const parsedCart = JSON.parse(savedCart);
               if (Array.isArray(parsedCart)) {
                 setCartItems(parsedCart);
+                console.log('Cart loaded successfully:', parsedCart);
               } else {
+                console.warn('Invalid cart format, resetting cart');
                 setCartItems([]);
               }
             } catch (error) {
@@ -49,13 +59,15 @@ export const CartProvider = ({ children }) => {
               setCartItems([]);
             }
           } else {
+            console.log('No saved cart found for user');
             setCartItems([]);
           }
-        } else {
+        } else if (!isUserAuthenticated) {
+          console.log('User not authenticated, clearing cart');
           setCartItems([]);
         }
       } catch (error) {
-        console.error('Error in loadCart:', error);
+        console.error('Error loading cart:', error);
         setCartItems([]);
       } finally {
         setIsLoading(false);
@@ -63,15 +75,16 @@ export const CartProvider = ({ children }) => {
     };
 
     loadCart();
-  }, [userId]);
+  }, [userId, isUserAuthenticated]);
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
     const saveCart = () => {
-      if (userId && !isLoading) {
+      if (!isLoading && userId) {
         try {
           const cartKey = `${STORAGE_PREFIX}${userId}`;
           localStorage.setItem(cartKey, JSON.stringify(cartItems));
+          console.log('Cart saved successfully:', cartItems);
           
           // Update cart total
           const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -86,17 +99,14 @@ export const CartProvider = ({ children }) => {
     saveCart();
   }, [cartItems, userId, isLoading]);
 
-  // Cleanup function to handle user logout
-  useEffect(() => {
-    if (!isUserAuthenticated) {
-      setCartItems([]);
-      setCartTotal(0);
-    }
-  }, [isUserAuthenticated]);
-
   const addToCart = (item) => {
     if (!isUserAuthenticated) {
       toast.error('Please login to add items to cart');
+      return;
+    }
+
+    if (!userId) {
+      toast.error('Please try again in a moment');
       return;
     }
 
@@ -164,6 +174,7 @@ export const CartProvider = ({ children }) => {
         const cartKey = `${STORAGE_PREFIX}${userId}`;
         localStorage.removeItem(cartKey);
       }
+      setCartTotal(0);
       toast.success('Cart cleared');
     } catch (error) {
       console.error('Error clearing cart:', error);
