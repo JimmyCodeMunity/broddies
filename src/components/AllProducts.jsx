@@ -44,14 +44,14 @@ const AllProducts = () => {
                     </div>
                 </div>
 
-                <div className="w-full text-center py-6">
+                {/* <div className="w-full text-center py-6">
                     <button
                         type="button"
                         className="py-2.5 px-6 text-sm bg-indigo-500 text-white rounded-full cursor-pointer font-semibold text-center shadow-xs transition-all duration-500 hover:bg-indigo-700"
                     >
                         View More
                     </button>
-                </div>
+                </div> */}
             </section>
         </div>
     );

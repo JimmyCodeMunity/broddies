@@ -12,7 +12,7 @@ const MiniProducts = () => {
             <section class="py-24">
                 <div className="w-full text-center py-6">
                     
-                        <button onClick={getAllArt} type='button' class='py-2.5 px-6 text-sm bg-indigo-500 text-white rounded-full cursor-pointer font-semibold text-center shadow-xs transition-all duration-500 hover:bg-indigo-700'>Get More</button>
+                        {/* <button onClick={getAllArt} type='button' class='py-2.5 px-6 text-sm bg-indigo-500 text-white rounded-full cursor-pointer font-semibold text-center shadow-xs transition-all duration-500 hover:bg-indigo-700'>Get More</button> */}
                    
                 </div>
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

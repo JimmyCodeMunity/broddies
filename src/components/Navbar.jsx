@@ -21,7 +21,7 @@ export const NavbarDemo = () => {
   const navItems = [
     { name: "Home", link: "/" },
     { name: "Shop", link: "/view-all-art" },
-    { name: "Blog", link: "#contact" },
+    // { name: "Blog", link: "#contact" },
     { 
       name: "Cart", 
       link: "/cart",
