@@ -80,7 +80,7 @@ const Cart = () => {
             <div key={item._id} className="bg-white rounded-lg shadow p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                 <img
-                  src={`http://server.broddiescollection.com/${item.image}`}
+                  src={`https://server.broddiescollection.com/${item.image}`}
                   alt={item.artname}
                   className="w-full sm:w-24 h-24 object-cover rounded"
                 />

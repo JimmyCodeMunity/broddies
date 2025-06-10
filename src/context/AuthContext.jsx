@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
   //     setLoading(true)
   //     console.log("details", email, password)
   //     try {
-  //         const response = await axios.post("http://server.broddiescollection.com/api/v1/admin/adminlogin", { email, password });
+  //         const response = await axios.post("https://server.broddiescollection.com/api/v1/admin/adminlogin", { email, password });
   //         const data = response.data;
   //         console.log("log data", data)
   //         setIsAdminAuthenticated(true);
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://server.broddiescollection.com/api/v1/user/createuser",
+        "https://server.broddiescollection.com/api/v1/user/createuser",
         { email,password,address,phone,username }
       );
       console.log(email,password,address,phone,username)
@@ -70,7 +70,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://server.broddiescollection.com/api/v1/user/userlogin",
+        "https://server.broddiescollection.com/api/v1/user/userlogin",
         { email, password }
       );
       const data = response.data;
@@ -98,7 +98,7 @@ export const AuthProvider = ({ children }) => {
     try {
       if (token) {
         const response = await axios.post(
-          `http://server.broddiescollection.com/api/v1/user/getuserdata`,
+          `https://server.broddiescollection.com/api/v1/user/getuserdata`,
           { token }
         );
         const userData = response.data;

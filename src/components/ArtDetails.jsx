@@ -80,7 +80,7 @@ const ArtDetails = ({ prod }) => {
                         <div className="lg:col-span-1">
                             <div className="relative mt-10 w-full">
                                 <img
-                                    src={`http://server.broddiescollection.com/${prod?.image}`}
+                                    src={`https://server.broddiescollection.com/${prod?.image}`}
                                     alt={prod?.artname}
                                     className="h-full w-full rounded-xl object-cover"
                                 />

@@ -27,7 +27,7 @@ const MiniProducts = () => {
                                         state={{ prod }}
                                         class="mx-auto sm:mr-0 group cursor-pointer lg:mx-auto bg-white transition-all duration-500">
                                         <div class="">
-                                            <img src={`http://server.broddiescollection.com/${prod?.image}`} alt="face cream image"
+                                            <img src={`https://server.broddiescollection.com/${prod?.image}`} alt="face cream image"
                                                 class="w-full aspect-square rounded-2xl object-cover" />
                                         </div>
                                         <div class="mt-5">

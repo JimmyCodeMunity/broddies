@@ -21,7 +21,7 @@ const AllProducts = () => {
                             >
                                 <div className="">
                                     <img
-                                        src={`http://server.broddiescollection.com/${prod?.image}`}
+                                        src={`https://server.broddiescollection.com/${prod?.image}`}
                                         alt={prod?.artname}
                                         className="w-full aspect-square rounded-2xl object-cover"
                                     />

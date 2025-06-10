@@ -24,7 +24,7 @@ export const ApiProvider = ({ children }) => {
     const getAllCategories = async () => {
         setLoading(true)
         try {
-            const response = await axios.get("http://server.broddiescollection.com/api/v1/admin/getcategories");
+            const response = await axios.get("https://server.broddiescollection.com/api/v1/admin/getcategories");
             const data = response.data;
             setLoading(false)
             setCategories(data)
@@ -42,7 +42,7 @@ export const ApiProvider = ({ children }) => {
     const getAllArt = async () => {
         setLoading(true)
         try {
-            const response = await axios.get("http://server.broddiescollection.com/api/v1/admin/getart");
+            const response = await axios.get("https://server.broddiescollection.com/api/v1/admin/getart");
             const data = response.data;
             setLoading(false)
             setArts(data)
@@ -64,7 +64,7 @@ export const ApiProvider = ({ children }) => {
     const getAllOrders = async () => {
         setLoading(true)
         try {
-            const response = await axios.get("http://server.broddiescollection.com/api/v1/admin/getallorders");
+            const response = await axios.get("https://server.broddiescollection.com/api/v1/admin/getallorders");
             const data = response.data;
             setLoading(false)
             setAllOrders(data)

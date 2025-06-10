@@ -17,7 +17,7 @@ const PaymentConfirmation = () => {
           throw new Error('No payment intent ID found');
         }
 
-        const response = await fetch('http://server.broddiescollection.com/api/v1/stripe/checkout-complete', {
+        const response = await fetch('https://server.broddiescollection.com/api/v1/stripe/checkout-complete', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

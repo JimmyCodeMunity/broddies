@@ -23,7 +23,7 @@ const PesapalCallback = () => {
 
         // Send callback data to backend
         const response = await axios.get(
-          'http://server.broddiescollection.com/api/v1/payments/pesapal/callback',
+          'https://server.broddiescollection.com/api/v1/payments/pesapal/callback',
           { params: { OrderTrackingId: orderTrackingId, userId: trackingId, planId: status } }
         );
 
