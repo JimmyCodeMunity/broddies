@@ -12,6 +12,7 @@ import ProtectedRoutes from "./context/ProtectedRoutes";
 import { CartProvider } from "./context/CartContext";
 import { ApiProvider } from "./context/ApiContext";
 import PaymentConfirmation from './pages/PaymentConfirmation';
+import PesapalCallback from './components/checkout/PesapalCallback';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/login" index element={<LoginPage />} />
           <Route path="/register" index element={<RegisterPage />} />
           <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
+          <Route path="/pesapal-callback" element={<PesapalCallback />} />
         </Routes>
         <ToastContainer
           position="top-right"

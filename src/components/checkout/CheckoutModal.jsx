@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext,useRef, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { toast } from 'react-toastify';
@@ -6,6 +6,9 @@ import { AuthContext } from '../../context/AuthContext';
 import { CartContext } from '../../context/CartContext';
 import PaymentMethodCard from './PaymentMethodCard';
 import StripeCheckoutForm from './StripeCheckoutForm';
+import PesapalCheckoutForm from './PesapalCheckoutForm';
+import PesapalModal from './PesapalModal';
+import axios from 'axios';
 
 // Replace with your Stripe publishable key
 const stripePromise = loadStripe('pk_test_51Oc4wRJE5eZbfcv0ZZg8sqwprkiBtm3lOAHIcRIkKFEUEAfmKa0F4uNIDc936uUwpxC6X8zIdE5TcUmoY58PFP2f00RLpIZc54');
@@ -15,6 +18,109 @@ const CheckoutModal = ({ isOpen, onClose }) => {
   const { cartTotal, cartItems } = useContext(CartContext);
   const { userdata } = useContext(AuthContext);
   const [clientSecret, setClientSecret] = useState('');
+  const [pesapalModalOpen, setPesapalModalOpen] = useState(false);
+  const [pesapalUrl, setPesapalUrl] = useState('');
+  const [pesapalOrderId, setPesapalOrderId] = useState('');
+  const [paying, setPaying] = useState(false)
+
+
+  const [loading, setLoading] = useState(false)
+    const [open, setOpen] = useState(false);
+    const [url, setUrl] = useState("")
+
+    const [amount, setAmount] = useState(0)
+    const [code, setCode] = useState(null)
+    const [paymentacc, setPaymentacc] = useState(null)
+    const [method, setMethod] = useState(null)
+
+    const intervalRef = useRef(null)
+    const [orderTrackingId, setOrderTrackingId] = useState("")
+    const [paymentComplete, setPaymentComplete] = useState(false)
+    const requestPayment = async () => {
+        setLoading(true)
+        try {
+          const response = await axios.post("https://broddie.menthealventures.com/api/v1/payments/pesapal/requestpayment", {
+            amount:cartTotal,
+            userId: userdata?._id,
+            email: userdata?.email,
+            cartItems:cartItems
+            })
+            const data = response.data;
+            console.log("response", data)
+            setLoading(false)
+
+            if (data.status == "200") {
+                setPaying(true)
+                const redirect = data.redirect_url;
+                setUrl(redirect)
+                setOpen(true)
+                console.log("order", data.order_tracking_id)
+                const orderTrackingId = data.order_tracking_id
+                // setOrderTrackingId(orderTrackingId)
+                // await checkStatus(orderTrackingId)
+                // Start polling every 3 seconds
+                // intervalRef.current = setInterval(() => {
+                //     console.log("checking now...")
+                //     checkStatus(orderTrackingId)
+                // }, 3000)
+                // redirect to that page
+
+                console.log("payment request made")
+            }
+
+        } catch (error) {
+            console.log("error requesting payment", error)
+
+        }
+    }
+
+    const closeModal = () => {
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+        }
+        setOpen(false)
+        setPaying(false)
+        setLoading(false)
+        setUrl("")
+    }
+
+
+    const checkStatus = async (orderTrackingId) => {
+        console.log("checking", orderTrackingId)
+        try {
+            const response = await axios.post("https://broddie.menthealventures.com/api/v1/payments/pesapal/checkpayment", { orderTrackingId })
+            const data = response.data
+            console.log("transaction state", data.status_code)
+            // return
+
+            // Example: assume data.status becomes "COMPLETED" when payment is done
+            if (data.status_code === 1) {
+                clearInterval(intervalRef.current)
+                setPaymentComplete(true)
+                setPaying(false)
+                setOpen(false)
+                setAmount(data.amount)
+                setCode(data.confirmation_code)
+                setPaymentacc(data.payment_account)
+                setMethod(data.payment_method)
+                toast.success("Payment completed successfully")
+            }
+
+        } catch (error) {
+            console.log("error checking", error)
+            clearInterval(intervalRef.current)
+            setPaying(false)
+        }
+    }
+
+    useEffect(() => {
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current)
+            }
+        }
+    }, [])
 
   useEffect(() => {
     // Create PaymentIntent as soon as the modal opens
@@ -66,6 +172,12 @@ const CheckoutModal = ({ isOpen, onClose }) => {
       active: true
     },
     {
+      id: 'pesapal',
+      name: 'Pesapal',
+      description: 'Pay with Pesapal (Mobile Money, Card, etc)',
+      active: true
+    },
+    {
       id: 'paypal',
       name: 'PayPal',
       description: 'Pay with your PayPal account (Coming Soon)',
@@ -75,6 +187,12 @@ const CheckoutModal = ({ isOpen, onClose }) => {
 
   const handleSuccess = () => {
     onClose();
+  };
+
+  const handlePesapalModalOpen = (url, orderId) => {
+    setPesapalUrl(url);
+    setPesapalOrderId(orderId);
+    setPesapalModalOpen(true);
   };
 
   if (!isOpen) return null;
@@ -149,6 +267,29 @@ const CheckoutModal = ({ isOpen, onClose }) => {
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
                 <p className="mt-2 text-gray-600">Initializing payment...</p>
               </div>
+            ) : selectedMethod === 'pesapal' ? (
+              // <PesapalCheckoutForm 
+              //   amount={cartTotal}
+              //   cartItems={cartItems}
+              //   onSuccess={handleSuccess}
+              //   onClose={onClose}
+              //   userId={userdata?._id}
+              //   onOpenModal={handlePesapalModalOpen}
+                  // />
+                  <div className="w-full py-4 flex flex-row justify-center items-center">
+                    {
+                                paying ? (
+                        <button className='bg-orange-500 h-12 w-60 rounded-xl text-white flex flex-row items-center justify-center'>
+                          <div className="flex items-center justify-center">
+              <span className="animate-spin h-8 w-8 border-b-2 border-orange-500 rounded-full"></span>
+            </div>
+                                    </button>
+                                ) : (
+                                    <button onClick={() => requestPayment()} className='bg-green-500 h-12 w-60 rounded-xl text-white'>Complete payment</button>
+                                )
+                            }
+                    
+            </div>
             ) : (
               <div className="text-center text-gray-500 py-4">
                 PayPal integration coming soon...
@@ -166,6 +307,32 @@ const CheckoutModal = ({ isOpen, onClose }) => {
           </div>
         </div>
       </div>
+      <div className="w-full">
+         {open && (
+                            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start p-10 z-50 overflow-hidden">
+                                <div className="bg-white rounded-xl shadow-lg w-full max-w-4xl h-[90vh] overflow-hidden p-5 relative">
+                                    <button
+                                        onClick={closeModal}
+                                        className="absolute top-3 right-3 text-red-600 font-bold text-xl"
+                                    >
+                                        &times;
+                                    </button>
+
+                                    <iframe
+                                        src={url}
+                                        className="w-full h-full rounded-b-xl border-none"
+                                        title="Mini Browser"
+                                    />
+                                </div>
+                            </div>
+                        )}
+      </div>
+
+      <PesapalModal
+        open={pesapalModalOpen}
+        url={pesapalUrl}
+        onClose={() => setPesapalModalOpen(false)}
+      />
     </div>
   );
 };

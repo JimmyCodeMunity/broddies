@@ -145,7 +145,7 @@ export const Lid = ({
         className="absolute inset-0 h-96 w-[32rem] rounded-2xl bg-[#010101] p-2">
         <div className="absolute inset-0 rounded-lg bg-[#272729]" />
         <video
-          src="https://videos.pexels.com/video-files/31811330/13553091_640_360_30fps.mp4"
+          src="../images/co.mp4"
           alt="art"
           autoPlay
           loop
