@@ -33,7 +33,7 @@ export const ApiProvider = ({ children }) => {
         } catch (error) {
             console.log("error getting orders")
             setLoading(false)
-            toast.error("error getting orders")
+            // toast.error("error getting orders")
 
         }
     }
@@ -49,9 +49,9 @@ export const ApiProvider = ({ children }) => {
             // console.log("categ", data)
 
         } catch (error) {
-            console.log("error getting meals")
+            // console.log("error getting meals")
             setLoading(false)
-            toast.error("error getting meals")
+            // toast.error("error getting meals")
 
         }
     }
@@ -76,7 +76,7 @@ export const ApiProvider = ({ children }) => {
         } catch (error) {
             console.log("error getting orders")
             setLoading(false)
-            toast.error("error getting orders")
+            // toast.error("error getting orders")
 
         }
     }
@@ -128,7 +128,7 @@ export const ApiProvider = ({ children }) => {
         } catch (error) {
             console.log("error getting orders")
             setLoading(false)
-            toast.error("error getting orders")
+            // toast.error("error getting orders")
 
         }
     }
@@ -149,7 +149,7 @@ export const ApiProvider = ({ children }) => {
         } catch (error) {
             console.log("error getting orders")
             setLoading(false)
-            toast.error("error getting orders")
+            // toast.error("error getting orders")
 
         }
     }
