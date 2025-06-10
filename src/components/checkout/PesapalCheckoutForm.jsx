@@ -37,7 +37,7 @@ const PesapalCheckoutForm = ({ amount: initialAmount, cartItems, userId, onSucce
     setLoading(true);
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/v1/payments/pesapal/requestpayment',
+        'http://server.broddiescollection.com/api/v1/payments/pesapal/requestpayment',
         {
           amount: initialAmount,
           userId,
@@ -90,7 +90,7 @@ const PesapalCheckoutForm = ({ amount: initialAmount, cartItems, userId, onSucce
   //   console.log("checking", orderTrackingId);
   //   try {
   //     const response = await axios.post(
-  //       "http://localhost:5000/api/v1/payments/pesapal/checkpayment",
+  //       "http://server.broddiescollection.com/api/v1/payments/pesapal/checkpayment",
   //       { orderTrackingId }
   //     );
   //     const data = response.data;

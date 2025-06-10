@@ -39,7 +39,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
     const requestPayment = async () => {
         setLoading(true)
         try {
-          const response = await axios.post("https://broddie.menthealventures.com/api/v1/payments/pesapal/requestpayment", {
+          const response = await axios.post("http://server.broddiescollection.com/api/v1/payments/pesapal/requestpayment", {
             amount:cartTotal,
             userId: userdata?._id,
             email: userdata?.email,
@@ -89,7 +89,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
     const checkStatus = async (orderTrackingId) => {
         console.log("checking", orderTrackingId)
         try {
-            const response = await axios.post("https://broddie.menthealventures.com/api/v1/payments/pesapal/checkpayment", { orderTrackingId })
+            const response = await axios.post("http://server.broddiescollection.com/api/v1/payments/pesapal/checkpayment", { orderTrackingId })
             const data = response.data
             console.log("transaction state", data.status_code)
             // return

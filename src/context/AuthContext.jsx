@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
   //     setLoading(true)
   //     console.log("details", email, password)
   //     try {
-  //         const response = await axios.post("http://localhost:5000/api/v1/admin/adminlogin", { email, password });
+  //         const response = await axios.post("http://server.broddiescollection.com/api/v1/admin/adminlogin", { email, password });
   //         const data = response.data;
   //         console.log("log data", data)
   //         setIsAdminAuthenticated(true);
