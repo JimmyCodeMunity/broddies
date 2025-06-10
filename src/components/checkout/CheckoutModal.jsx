@@ -134,7 +134,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
             price: parseFloat(item.price)
           }));
 
-          const response = await fetch('https://broddie.menthealventures.com/api/v1/stripe/create-payment-intent', {
+          const response = await fetch('http://server.broddiescollection.com/api/v1/stripe/create-payment-intent', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

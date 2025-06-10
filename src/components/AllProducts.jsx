@@ -21,7 +21,7 @@ const AllProducts = () => {
                             >
                                 <div className="">
                                     <img
-                                        src={`https://broddie.menthealventures.com/${prod?.image}`}
+                                        src={`http://server.broddiescollection.com/${prod?.image}`}
                                         alt={prod?.artname}
                                         className="w-full aspect-square rounded-2xl object-cover"
                                     />
