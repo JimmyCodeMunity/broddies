@@ -11,8 +11,9 @@ import "react-toastify/dist/ReactToastify.css";
 import ProtectedRoutes from "./context/ProtectedRoutes";
 import { CartProvider } from "./context/CartContext";
 import { ApiProvider } from "./context/ApiContext";
-import PaymentConfirmation from './pages/PaymentConfirmation';
-import PesapalCallback from './components/checkout/PesapalCallback';
+import PaymentConfirmation from "./pages/PaymentConfirmation";
+import PesapalCallback from "./components/checkout/PesapalCallback";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
   return (
@@ -23,15 +24,19 @@ function App() {
             <Route path="/artview/:id" index element={<ProductView />} />
             <Route path="/view-all-art" index element={<AllArtPage />} />
             <Route path="/cart" index element={<CartPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
           </Route>
           <Route path="/" index element={<HomePage />} />
           <Route path="/login" index element={<LoginPage />} />
           <Route path="/register" index element={<RegisterPage />} />
-          <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
+          <Route
+            path="/payment-confirmation"
+            element={<PaymentConfirmation />}
+          />
           <Route path="/pesapal-callback" element={<PesapalCallback />} />
         </Routes>
         <ToastContainer
-          position="top-right"
+          position="bottom-right"
           autoClose={5000}
           hideProgressBar={false}
           newestOnTop

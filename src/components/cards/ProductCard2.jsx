@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { CartContext } from "../../context/CartContext";
 import { toast } from "react-toastify"; // If you're using toast for notifications
+import { Link } from "react-router-dom";
 
 const ProductCard2 = ({ prod }) => {
   const { addToCart, cartItems, isLoading } = useContext(CartContext);

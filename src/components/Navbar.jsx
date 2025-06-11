@@ -13,6 +13,7 @@ import {
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { CartContext } from "../context/CartContext";
+import { ChevronDown } from "lucide-react";
 
 export const NavbarDemo = () => {
   const { cartItems } = useContext(CartContext);
@@ -33,9 +34,8 @@ export const NavbarDemo = () => {
   const { userdata, isUserAuthenticated, logout } = useContext(AuthContext);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
+  const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
+  const closeDropdown = () => setIsDropdownOpen(false);
 
   console.log("user", userdata);
 
@@ -48,18 +48,32 @@ export const NavbarDemo = () => {
           <NavItems items={navItems} />
           <div className="flex items-center gap-4">
             {isUserAuthenticated ? (
-              <>
-                <Link to="/login">
-                  <NavbarButton variant="secondary">
-                    {userdata?.username}
-                  </NavbarButton>
-                </Link>
-                <Link onClick={logout}>
-                  <NavbarButton variant="secondary">
-                    Logout
-                  </NavbarButton>
-                </Link>
-              </>
+              <div className="relative">
+                <button
+                  onClick={toggleDropdown}
+                  className="flex items-center gap-2 px-4 py-2 rounded-md bg-transparent hover:bg-gray-100 dark:hover:bg-neutral-800 text-black dark:text-white font-semibold focus:outline-none"
+                >
+                  <span>{userdata?.username}</span>
+                  <ChevronDown size={18} />
+                </button>
+                {isDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-neutral-900 rounded-md shadow-lg z-50">
+                    <Link
+                      to="/profile"
+                      onClick={closeDropdown}
+                      className="block px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-neutral-800"
+                    >
+                      Profile
+                    </Link>
+                    <button
+                      onClick={() => { logout(); closeDropdown(); }}
+                      className="block w-full text-left px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-neutral-800"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : (
               <>
                 <Link to="/login">
@@ -100,39 +114,39 @@ export const NavbarDemo = () => {
               </Link>
             ))}
             {isUserAuthenticated ? (
-              <>
-                <Link to="/login">
-                  <NavbarButton variant="secondary">
-                    {userdata?.username}
-                  </NavbarButton>
+              <div className="flex flex-col gap-2 mt-2">
+                <Link
+                  to="/profile"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-md"
+                >
+                  Profile
                 </Link>
-                <Link onClick={logout}>
-                  <NavbarButton variant="secondary">
-                    Logout
-                  </NavbarButton>
-                </Link>
-              </>
+                <button
+                  onClick={() => { logout(); setIsMobileMenuOpen(false); }}
+                  className="block w-full text-left px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-md"
+                >
+                  Logout
+                </button>
+              </div>
             ) : (
-              <>
               <div className="flex w-full flex-col gap-4">
-              <NavbarButton
-                onClick={() => setIsMobileMenuOpen(false)}
-                variant="primary"
-                className="w-full"
-              >
-                Login
-              </NavbarButton>
-              <NavbarButton
-                // onClick={() => setIsMobileMenuOpen(false)}
-                onClick={logout}
-                variant="primary"
-                className="w-full"
-              >
-                Logout
-              </NavbarButton>
-            </div></>
+                <NavbarButton
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  variant="primary"
+                  className="w-full"
+                >
+                  Login
+                </NavbarButton>
+                <NavbarButton
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  variant="primary"
+                  className="w-full"
+                >
+                  Sign Up
+                </NavbarButton>
+              </div>
             )}
-            
           </MobileNavMenu>
         </MobileNav>
       </Navbar>
