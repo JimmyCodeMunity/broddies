@@ -123,17 +123,17 @@ export const AuthProvider = ({ children }) => {
   ) => {
     console.log("data tbu", userid, username);
     try {
-      if (token) {
-        const response = await axios.post(
-          `https://server.broddiescollection.com/api/v1/user/updateuser`,
-          { userid, username, email, password, phone, address }
-        );
-        const userData = response.data;
-        setUserdata(userData);
-        console.log("user data collected", userData);
-        // localStorage.setItem('userdata', JSON.stringify(userData)); // Store in browser
-        // console.log('admin data from API:', userData);
-      }
+      // if (token) {
+      const response = await axios.post(
+        `https://server.broddiescollection.com/api/v1/user/updateuser`,
+        { userid, username, email, password, phone, address }
+      );
+      const userData = response.data;
+      setUserdata(userData);
+      console.log("user data collected", userData);
+      // localStorage.setItem('userdata', JSON.stringify(userData)); // Store in browser
+      // console.log('admin data from API:', userData);
+      // }
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
