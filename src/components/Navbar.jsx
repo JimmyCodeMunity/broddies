@@ -37,7 +37,7 @@ export const NavbarDemo = () => {
   const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
   const closeDropdown = () => setIsDropdownOpen(false);
 
-  console.log("user", userdata);
+  // console.log("user", userdata);
 
   return (
     <div className="relative w-full">
@@ -79,8 +79,12 @@ export const NavbarDemo = () => {
               </div>
             ) : (
               <>
-                <NavbarButton to="/login" variant="secondary">Login</NavbarButton>
-                <NavbarButton to="/register" variant="primary">Sign Up</NavbarButton>
+                <NavbarButton to="/login" variant="secondary">
+                  Login
+                </NavbarButton>
+                <NavbarButton to="/register" variant="primary">
+                  Sign Up
+                </NavbarButton>
               </>
             )}
           </div>

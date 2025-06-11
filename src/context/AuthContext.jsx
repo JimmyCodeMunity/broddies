@@ -121,16 +121,27 @@ export const AuthProvider = ({ children }) => {
     phone,
     address
   ) => {
-    console.log("data tbu", userid, username);
     try {
+      console.log("data tbu", userid, username, email);
       // if (token) {
+      // const response = await axios.post(
+      //   `http://localhost:5000/api/v1/user/updateuser`,
+      //   { userid, username, email, password, phone, address }
+      // );
       const response = await axios.post(
-        `https://server.broddiescollection.com/api/v1/user/updateuser`,
-        { userid, username, email, password, phone, address }
+        "http://localhost:5000/api/v1/user/updateuser",
+        {
+          userid,
+          username,
+          email,
+          password,
+          phone,
+          address,
+        }
       );
       const userData = response.data;
       setUserdata(userData);
-      console.log("user data collected", userData);
+      // console.log("user data collected", userData);
       // localStorage.setItem('userdata', JSON.stringify(userData)); // Store in browser
       // console.log('admin data from API:', userData);
       // }

@@ -2,9 +2,11 @@ import React, { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { NavbarDemo } from "../components/Navbar";
 import Footer from "../components/Footer";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const ProfilePage = () => {
-  const { userdata, updateUserdata } = useContext(AuthContext);
+  const { userdata, updateUserdata, getUserdata } = useContext(AuthContext);
   const [userDetails, setUserDetails] = useState({
     name: userdata?.username || "",
     userid: userdata?._id || "",
@@ -12,6 +14,51 @@ const ProfilePage = () => {
     phone: userdata?.phone || "",
     address: userdata?.address || "",
   });
+
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  // password reset
+  const passwordReset = async (e) => {
+    e.preventDefault();
+    try {
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        toast.error("Please fill all the password fields");
+        return;
+      } else if (newPassword !== confirmPassword) {
+        toast.error("Passwords do not match");
+        return;
+      } else {
+        const response = await axios.post(
+          "https://server.broddiescollection.com/api/v1/user/updatepassword",
+          {
+            currentPassword,
+            newPassword,
+            email: userDetails.email,
+          }
+        );
+        const data = response.data;
+        toast.success("Password updated successfully");
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+        if (token) {
+          await getUserdata(token);
+        }
+      }
+    } catch (error) {
+      console.log("status code error", error.status);
+      if (error.status == "403") {
+        toast.warn("current password entered is incorrect!");
+      } else if (error.status == "401") {
+        toast.error("user not found.Login again and try.");
+      } else {
+        console.log("error during pass reset", error);
+        toast.error("password reset failed.Try again later.");
+      }
+    }
+  };
 
   const [passwordDetails, setPasswordDetails] = useState({
     currentPassword: "",
@@ -29,18 +76,35 @@ const ProfilePage = () => {
     setPasswordDetails((prev) => ({ ...prev, [name]: value }));
   };
 
+  const token = localStorage.getItem("user_auth_token");
+
   const handleUserDetailsSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("user_auth_token");
-    if (token) {
-      await updateUserdata(token, {
-        username: userDetails.name,
-        userid: userDetails.userid,
-        email: userDetails.email,
-        phone: userDetails.phone,
-        address: userDetails.address,
-      });
-      console.log("User details updated:", userDetails);
+
+    try {
+      const response = await axios.post(
+        "https://server.broddiescollection.com/api/v1/user/updateuser",
+        {
+          username: userDetails.name,
+          userid: userDetails.userid,
+          email: userDetails.email,
+          phone: userDetails.phone,
+          address: userDetails.address,
+        }
+      );
+      const userData = response.data;
+      toast.success("user profile updated");
+      if (token) {
+        await getUserdata(token);
+      }
+
+      // console.log("user data collected", userData);
+      // localStorage.setItem('userdata', JSON.stringify(userData)); // Store in browser
+      // console.log('admin data from API:', userData);
+      // }
+    } catch (error) {
+      toast.error("error updating profile");
+      console.error("Error fetching user data:", error);
     }
   };
 
@@ -123,14 +187,14 @@ const ProfilePage = () => {
           <h2 className="text-xl font-semibold mb-4 text-white">
             Change Password
           </h2>
-          <form onSubmit={handlePasswordSubmit}>
+          <form onSubmit={passwordReset}>
             <div className="mb-4">
               <label className="block text-gray-300">Current Password</label>
               <input
                 type="password"
                 name="currentPassword"
-                value={passwordDetails.currentPassword}
-                onChange={handlePasswordDetailsChange}
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
                 className="mt-1 block w-full border border-gray-700 rounded-md shadow-sm p-2 bg-black text-white placeholder-gray-400"
               />
             </div>
@@ -139,8 +203,8 @@ const ProfilePage = () => {
               <input
                 type="password"
                 name="newPassword"
-                value={passwordDetails.newPassword}
-                onChange={handlePasswordDetailsChange}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
                 className="mt-1 block w-full border border-gray-700 rounded-md shadow-sm p-2 bg-black text-white placeholder-gray-400"
               />
             </div>
@@ -149,8 +213,8 @@ const ProfilePage = () => {
               <input
                 type="password"
                 name="confirmPassword"
-                value={passwordDetails.confirmPassword}
-                onChange={handlePasswordDetailsChange}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 className="mt-1 block w-full border border-gray-700 rounded-md shadow-sm p-2 bg-black text-white placeholder-gray-400"
               />
             </div>
