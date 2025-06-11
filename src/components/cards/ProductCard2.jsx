@@ -30,14 +30,14 @@ const ProductCard2 = ({ prod }) => {
   return (
     <div>
       <div className="sm:w-72 w-full bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
-        <div className="">
+        <Link className="" to={`/artview/${prod._id}`} state={{ prod }}>
           <img
             src={`https://server.broddiescollection.com/${prod?.image}`}
             alt="Product"
-            className="h-80 w-full object-cover rounded-t-xl"
+            className="md:h-80 h-40 w-full object-cover rounded-t-xl"
           />
           <div className="px-4 py-3 w-full">
-            <span className="text-gray-400 mr-3 uppercase text-xs">Brand</span>
+            <span className="text-gray-400 mr-3 text-xs">{prod?.category}</span>
             <p className="text-lg font-bold text-black truncate block capitalize">
               {prod?.artname}
             </p>
@@ -77,7 +77,7 @@ const ProductCard2 = ({ prod }) => {
               )}
             </div>
           </div>
-        </div>
+        </Link>
       </div>
     </div>
   );
