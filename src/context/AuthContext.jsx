@@ -36,25 +36,25 @@ export const AuthProvider = ({ children }) => {
 
   // Fetch user data using token
 
-  const userregister = async (email,password,address,phone,username) => {
+  const userregister = async (email, password, address, phone, username) => {
     setLoading(true);
     try {
       const response = await axios.post(
         "https://server.broddiescollection.com/api/v1/user/createuser",
-        { email,password,address,phone,username }
+        { email, password, address, phone, username }
       );
-      console.log(email,password,address,phone,username)
+      console.log(email, password, address, phone, username);
       const data = response.data;
-    //   setIsAdminAuthenticated(true);
+      //   setIsAdminAuthenticated(true);
       setLoading(false);
-    //   localStorage.setItem("ad_auth_token", data.token);
-    //   localStorage.setItem("ad_authenticated", true);
-    //   setAuthtoken(data.token);
-    //   await getAdmindata(data?.token);
+      //   localStorage.setItem("ad_auth_token", data.token);
+      //   localStorage.setItem("ad_authenticated", true);
+      //   setAuthtoken(data.token);
+      //   await getAdmindata(data?.token);
       return true; // Login successful
     } catch (error) {
       setLoading(false);
-      console.log("error",error)
+      console.log("error", error);
       if (error.response && error.response.status == 400) {
         toast.error("Account does not exist");
       } else if (error.response && error.response.status == 401) {
@@ -103,7 +103,34 @@ export const AuthProvider = ({ children }) => {
         );
         const userData = response.data;
         setUserdata(userData);
-        console.log("user data collected",userData)
+        // console.log("user data collected", userData);
+        // localStorage.setItem('userdata', JSON.stringify(userData)); // Store in browser
+        // console.log('admin data from API:', userData);
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  const updateUserdata = async (
+    token,
+    userid,
+    username,
+    email,
+    password,
+    phone,
+    address
+  ) => {
+    console.log("data tbu", userid, username);
+    try {
+      if (token) {
+        const response = await axios.post(
+          `http://localhost:5000/api/v1/user/updateuser`,
+          { userid, username, email, password, phone, address }
+        );
+        const userData = response.data;
+        setUserdata(userData);
+        console.log("user data collected", userData);
         // localStorage.setItem('userdata', JSON.stringify(userData)); // Store in browser
         // console.log('admin data from API:', userData);
       }
@@ -155,7 +182,8 @@ export const AuthProvider = ({ children }) => {
         setLoading,
         getUserdata,
         loading,
-        userregister
+        userregister,
+        updateUserdata,
       }}
     >
       {children}

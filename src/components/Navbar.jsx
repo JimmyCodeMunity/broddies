@@ -23,10 +23,10 @@ export const NavbarDemo = () => {
     { name: "Home", link: "/" },
     { name: "Shop", link: "/view-all-art" },
     // { name: "Blog", link: "#contact" },
-    { 
-      name: "Cart", 
+    {
+      name: "Cart",
       link: "/cart",
-      badge: cartItemCount > 0 ? cartItemCount : null
+      badge: cartItemCount > 0 ? cartItemCount : null,
     },
   ];
 
@@ -66,7 +66,10 @@ export const NavbarDemo = () => {
                       Profile
                     </Link>
                     <button
-                      onClick={() => { logout(); closeDropdown(); }}
+                      onClick={() => {
+                        logout();
+                        closeDropdown();
+                      }}
                       className="block w-full text-left px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-neutral-800"
                     >
                       Logout
@@ -76,12 +79,8 @@ export const NavbarDemo = () => {
               </div>
             ) : (
               <>
-                <Link to="/login">
-                  <NavbarButton variant="secondary">Login</NavbarButton>
-                </Link>
-                <Link to="/register">
-                  <NavbarButton variant="primary">Sign Up</NavbarButton>
-                </Link>
+                <NavbarButton to="/login" variant="secondary">Login</NavbarButton>
+                <NavbarButton to="/register" variant="primary">Sign Up</NavbarButton>
               </>
             )}
           </div>
@@ -123,7 +122,10 @@ export const NavbarDemo = () => {
                   Profile
                 </Link>
                 <button
-                  onClick={() => { logout(); setIsMobileMenuOpen(false); }}
+                  onClick={() => {
+                    logout();
+                    setIsMobileMenuOpen(false);
+                  }}
                   className="block w-full text-left px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-md"
                 >
                   Logout
