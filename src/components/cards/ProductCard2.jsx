@@ -29,14 +29,14 @@ const ProductCard2 = ({ prod }) => {
 
   return (
     <div>
-      <div className="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
+      <div className="sm:w-72 w-full bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
         <div className="">
           <img
             src={`https://server.broddiescollection.com/${prod?.image}`}
             alt="Product"
-            className="h-80 w-72 object-cover rounded-t-xl"
+            className="h-80 w-full object-cover rounded-t-xl"
           />
-          <div className="px-4 py-3 w-72">
+          <div className="px-4 py-3 w-full">
             <span className="text-gray-400 mr-3 uppercase text-xs">Brand</span>
             <p className="text-lg font-bold text-black truncate block capitalize">
               {prod?.artname}
