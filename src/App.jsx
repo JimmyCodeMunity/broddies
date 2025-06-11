@@ -14,6 +14,7 @@ import { ApiProvider } from "./context/ApiContext";
 import PaymentConfirmation from "./pages/PaymentConfirmation";
 import PesapalCallback from "./components/checkout/PesapalCallback";
 import ProfilePage from "./pages/ProfilePage";
+import Whatsap from "./components/Whatsap";
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
           pauseOnHover
         />
       </CartProvider>
+      <Whatsap />
     </ApiProvider>
   );
 }

@@ -1,17 +1,16 @@
-import React from 'react'
-import { NavbarDemo } from '../components/Navbar'
-import AllProducts from '../components/AllProducts'
-import Footer from '../components/Footer'
+import React from "react";
+import { NavbarDemo } from "../components/Navbar";
+import AllProducts from "../components/AllProducts";
+import Footer from "../components/Footer";
 
 const AllArtPage = () => {
-    return (
-        <div className="bg-black py-5">
-            <NavbarDemo />
-            <AllProducts />
-            <Footer />
+  return (
+    <div className="bg-black py-5">
+      <NavbarDemo />
+      <AllProducts />
+      <Footer />
+    </div>
+  );
+};
 
-        </div>
-    )
-}
-
-export default AllArtPage
+export default AllArtPage;
