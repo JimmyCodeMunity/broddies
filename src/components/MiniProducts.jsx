@@ -30,7 +30,7 @@ const MiniProducts = () => {
           <a href="/view-all-art">
             <button
               type="button"
-              class="py-2.5 px-6 text-sm bg-indigo-500 text-white rounded-full cursor-pointer font-semibold text-center shadow-xs transition-all duration-500 hover:bg-indigo-700"
+              class="py-2.5 px-6 text-sm bg-black text-white rounded-full cursor-pointer font-semibold text-center shadow-xs transition-all duration-500 hover:bg-indigo-700"
             >
               View More
             </button>

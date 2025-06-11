@@ -70,7 +70,9 @@ const ProductCard2 = ({ prod }) => {
                 </svg>
               </div>
               {isProductInCart && (
-                <p className="text-sm text-green-500 ml-2">Added to Cart</p>
+                <Link to="/cart" className="text-sm text-green-500 ml-2">
+                  Added to Cart
+                </Link>
               )}
             </div>
           </div>
