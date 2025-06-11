@@ -1,126 +1,129 @@
-import React, { useState, useContext,useRef, useEffect } from 'react';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements } from '@stripe/react-stripe-js';
-import { toast } from 'react-toastify';
-import { AuthContext } from '../../context/AuthContext';
-import { CartContext } from '../../context/CartContext';
-import PaymentMethodCard from './PaymentMethodCard';
-import StripeCheckoutForm from './StripeCheckoutForm';
-import PesapalCheckoutForm from './PesapalCheckoutForm';
-import PesapalModal from './PesapalModal';
-import axios from 'axios';
+import React, { useState, useContext, useRef, useEffect } from "react";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+import { toast } from "react-toastify";
+import { AuthContext } from "../../context/AuthContext";
+import { CartContext } from "../../context/CartContext";
+import PaymentMethodCard from "./PaymentMethodCard";
+import StripeCheckoutForm from "./StripeCheckoutForm";
+import PesapalCheckoutForm from "./PesapalCheckoutForm";
+import PesapalModal from "./PesapalModal";
+import axios from "axios";
 
 // Replace with your Stripe publishable key
-const stripePromise = loadStripe('pk_test_51Oc4wRJE5eZbfcv0ZZg8sqwprkiBtm3lOAHIcRIkKFEUEAfmKa0F4uNIDc936uUwpxC6X8zIdE5TcUmoY58PFP2f00RLpIZc54');
+const stripePromise = loadStripe(
+  "pk_test_51Oc4wRJE5eZbfcv0ZZg8sqwprkiBtm3lOAHIcRIkKFEUEAfmKa0F4uNIDc936uUwpxC6X8zIdE5TcUmoY58PFP2f00RLpIZc54"
+);
 
 const CheckoutModal = ({ isOpen, onClose }) => {
-  const [selectedMethod, setSelectedMethod] = useState('stripe');
+  const [selectedMethod, setSelectedMethod] = useState("stripe");
   const { cartTotal, cartItems } = useContext(CartContext);
   const { userdata } = useContext(AuthContext);
-  const [clientSecret, setClientSecret] = useState('');
+  const [clientSecret, setClientSecret] = useState("");
   const [pesapalModalOpen, setPesapalModalOpen] = useState(false);
-  const [pesapalUrl, setPesapalUrl] = useState('');
-  const [pesapalOrderId, setPesapalOrderId] = useState('');
-  const [paying, setPaying] = useState(false)
+  const [pesapalUrl, setPesapalUrl] = useState("");
+  const [pesapalOrderId, setPesapalOrderId] = useState("");
+  const [paying, setPaying] = useState(false);
 
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [url, setUrl] = useState("");
 
-  const [loading, setLoading] = useState(false)
-    const [open, setOpen] = useState(false);
-    const [url, setUrl] = useState("")
+  const [amount, setAmount] = useState(0);
+  const [code, setCode] = useState(null);
+  const [paymentacc, setPaymentacc] = useState(null);
+  const [method, setMethod] = useState(null);
 
-    const [amount, setAmount] = useState(0)
-    const [code, setCode] = useState(null)
-    const [paymentacc, setPaymentacc] = useState(null)
-    const [method, setMethod] = useState(null)
-
-    const intervalRef = useRef(null)
-    const [orderTrackingId, setOrderTrackingId] = useState("")
-    const [paymentComplete, setPaymentComplete] = useState(false)
-    const requestPayment = async () => {
-        setLoading(true)
-        try {
-          const response = await axios.post("http://server.broddiescollection.com/api/v1/payments/pesapal/requestpayment", {
-            amount:cartTotal,
-            userId: userdata?._id,
-            email: userdata?.email,
-            cartItems:cartItems
-            })
-            const data = response.data;
-            console.log("response", data)
-            setLoading(false)
-
-            if (data.status == "200") {
-                setPaying(true)
-                const redirect = data.redirect_url;
-                setUrl(redirect)
-                setOpen(true)
-                console.log("order", data.order_tracking_id)
-                const orderTrackingId = data.order_tracking_id
-                // setOrderTrackingId(orderTrackingId)
-                // await checkStatus(orderTrackingId)
-                // Start polling every 3 seconds
-                // intervalRef.current = setInterval(() => {
-                //     console.log("checking now...")
-                //     checkStatus(orderTrackingId)
-                // }, 3000)
-                // redirect to that page
-
-                console.log("payment request made")
-            }
-
-        } catch (error) {
-            console.log("error requesting payment", error)
-
+  const intervalRef = useRef(null);
+  const [orderTrackingId, setOrderTrackingId] = useState("");
+  const [paymentComplete, setPaymentComplete] = useState(false);
+  const requestPayment = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        "https://server.broddiescollection.com/api/v1/payments/pesapal/requestpayment",
+        {
+          amount: cartTotal,
+          userId: userdata?._id,
+          email: userdata?.email,
+          cartItems: cartItems,
         }
+      );
+      const data = response.data;
+      console.log("response", data);
+      setLoading(false);
+
+      if (data.status == "200") {
+        setPaying(true);
+        const redirect = data.redirect_url;
+        setUrl(redirect);
+        setOpen(true);
+        console.log("order", data.order_tracking_id);
+        const orderTrackingId = data.order_tracking_id;
+        // setOrderTrackingId(orderTrackingId)
+        // await checkStatus(orderTrackingId)
+        // Start polling every 3 seconds
+        // intervalRef.current = setInterval(() => {
+        //     console.log("checking now...")
+        //     checkStatus(orderTrackingId)
+        // }, 3000)
+        // redirect to that page
+
+        console.log("payment request made");
+      }
+    } catch (error) {
+      console.log("error requesting payment", error);
     }
+  };
 
-    const closeModal = () => {
-        if (intervalRef.current) {
-            clearInterval(intervalRef.current);
-            intervalRef.current = null;
-        }
-        setOpen(false)
-        setPaying(false)
-        setLoading(false)
-        setUrl("")
+  const closeModal = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
     }
+    setOpen(false);
+    setPaying(false);
+    setLoading(false);
+    setUrl("");
+  };
 
+  const checkStatus = async (orderTrackingId) => {
+    console.log("checking", orderTrackingId);
+    try {
+      const response = await axios.post(
+        "http://server.broddiescollection.com/api/v1/payments/pesapal/checkpayment",
+        { orderTrackingId }
+      );
+      const data = response.data;
+      console.log("transaction state", data.status_code);
+      // return
 
-    const checkStatus = async (orderTrackingId) => {
-        console.log("checking", orderTrackingId)
-        try {
-            const response = await axios.post("http://server.broddiescollection.com/api/v1/payments/pesapal/checkpayment", { orderTrackingId })
-            const data = response.data
-            console.log("transaction state", data.status_code)
-            // return
-
-            // Example: assume data.status becomes "COMPLETED" when payment is done
-            if (data.status_code === 1) {
-                clearInterval(intervalRef.current)
-                setPaymentComplete(true)
-                setPaying(false)
-                setOpen(false)
-                setAmount(data.amount)
-                setCode(data.confirmation_code)
-                setPaymentacc(data.payment_account)
-                setMethod(data.payment_method)
-                toast.success("Payment completed successfully")
-            }
-
-        } catch (error) {
-            console.log("error checking", error)
-            clearInterval(intervalRef.current)
-            setPaying(false)
-        }
+      // Example: assume data.status becomes "COMPLETED" when payment is done
+      if (data.status_code === 1) {
+        clearInterval(intervalRef.current);
+        setPaymentComplete(true);
+        setPaying(false);
+        setOpen(false);
+        setAmount(data.amount);
+        setCode(data.confirmation_code);
+        setPaymentacc(data.payment_account);
+        setMethod(data.payment_method);
+        toast.success("Payment completed successfully");
+      }
+    } catch (error) {
+      console.log("error checking", error);
+      clearInterval(intervalRef.current);
+      setPaying(false);
     }
+  };
 
-    useEffect(() => {
-        return () => {
-            if (intervalRef.current) {
-                clearInterval(intervalRef.current)
-            }
-        }
-    }, [])
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     // Create PaymentIntent as soon as the modal opens
@@ -128,34 +131,37 @@ const CheckoutModal = ({ isOpen, onClose }) => {
       const createPaymentIntent = async () => {
         try {
           // Create condensed cart data with only essential information
-          const condensedCartItems = cartItems.map(item => ({
+          const condensedCartItems = cartItems.map((item) => ({
             _id: item._id,
             quantity: item.quantity,
-            price: parseFloat(item.price)
+            price: parseFloat(item.price),
           }));
 
-          const response = await fetch('http://server.broddiescollection.com/api/v1/stripe/create-payment-intent', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              amount: cartTotal,
-              currency: 'usd',
-              userId: userdata?._id,
-              cartItems: condensedCartItems // Send only essential cart data
-            }),
-          });
+          const response = await fetch(
+            "http://server.broddiescollection.com/api/v1/stripe/create-payment-intent",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                amount: cartTotal,
+                currency: "usd",
+                userId: userdata?._id,
+                cartItems: condensedCartItems, // Send only essential cart data
+              }),
+            }
+          );
 
           if (!response.ok) {
-            throw new Error('Failed to create payment intent');
+            throw new Error("Failed to create payment intent");
           }
 
           const data = await response.json();
           setClientSecret(data.paymentIntent);
         } catch (error) {
-          console.error('Payment initialization failed:', error);
-          toast.error('Failed to initialize payment');
+          console.error("Payment initialization failed:", error);
+          toast.error("Failed to initialize payment");
           onClose();
         }
       };
@@ -166,23 +172,23 @@ const CheckoutModal = ({ isOpen, onClose }) => {
 
   const paymentMethods = [
     {
-      id: 'stripe',
-      name: 'Credit Card',
-      description: 'Pay securely with your credit card',
-      active: true
+      id: "stripe",
+      name: "Credit Card",
+      description: "Pay securely with your credit card",
+      active: true,
     },
     {
-      id: 'pesapal',
-      name: 'Pesapal',
-      description: 'Pay with Pesapal (Mobile Money, Card, etc)',
-      active: true
+      id: "pesapal",
+      name: "Pesapal",
+      description: "Pay with Pesapal (Mobile Money, Card, etc)",
+      active: true,
     },
     {
-      id: 'paypal',
-      name: 'PayPal',
-      description: 'Pay with your PayPal account (Coming Soon)',
-      active: false
-    }
+      id: "paypal",
+      name: "PayPal",
+      description: "Pay with your PayPal account (Coming Soon)",
+      active: false,
+    },
   ];
 
   const handleSuccess = () => {
@@ -200,15 +206,15 @@ const CheckoutModal = ({ isOpen, onClose }) => {
   const options = {
     clientSecret,
     appearance: {
-      theme: 'stripe',
+      theme: "stripe",
       variables: {
-        colorPrimary: '#0570de',
-        colorBackground: '#ffffff',
-        colorText: '#30313d',
-        colorDanger: '#df1b41',
-        fontFamily: 'Ideal Sans, system-ui, sans-serif',
-        spacingUnit: '2px',
-        borderRadius: '4px',
+        colorPrimary: "#0570de",
+        colorBackground: "#ffffff",
+        colorText: "#30313d",
+        colorDanger: "#df1b41",
+        fontFamily: "Ideal Sans, system-ui, sans-serif",
+        spacingUnit: "2px",
+        borderRadius: "4px",
       },
     },
   };
@@ -227,8 +233,18 @@ const CheckoutModal = ({ isOpen, onClose }) => {
               className="text-gray-400 hover:text-gray-500 focus:outline-none"
             >
               <span className="sr-only">Close</span>
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -245,7 +261,11 @@ const CheckoutModal = ({ isOpen, onClose }) => {
                       key={method.id}
                       method={method}
                       selected={selectedMethod === method.id}
-                      onSelect={method.active ? setSelectedMethod : () => toast.info('Coming soon!')}
+                      onSelect={
+                        method.active
+                          ? setSelectedMethod
+                          : () => toast.info("Coming soon!")
+                      }
                     />
                   ))}
                 </div>
@@ -254,42 +274,44 @@ const CheckoutModal = ({ isOpen, onClose }) => {
           </div>
 
           <div className="bg-gray-50 px-4 py-3">
-            {selectedMethod === 'stripe' && clientSecret ? (
+            {selectedMethod === "stripe" && clientSecret ? (
               <Elements stripe={stripePromise} options={options}>
-                <StripeCheckoutForm 
-                  amount={cartTotal} 
+                <StripeCheckoutForm
+                  amount={cartTotal}
                   cartItems={cartItems}
-                  onSuccess={handleSuccess} 
+                  onSuccess={handleSuccess}
                 />
               </Elements>
-            ) : selectedMethod === 'stripe' ? (
+            ) : selectedMethod === "stripe" ? (
               <div className="text-center py-4">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
                 <p className="mt-2 text-gray-600">Initializing payment...</p>
               </div>
-            ) : selectedMethod === 'pesapal' ? (
-              // <PesapalCheckoutForm 
+            ) : selectedMethod === "pesapal" ? (
+              // <PesapalCheckoutForm
               //   amount={cartTotal}
               //   cartItems={cartItems}
               //   onSuccess={handleSuccess}
               //   onClose={onClose}
               //   userId={userdata?._id}
               //   onOpenModal={handlePesapalModalOpen}
-                  // />
-                  <div className="w-full py-4 flex flex-row justify-center items-center">
-                    {
-                                paying ? (
-                        <button className='bg-orange-500 h-12 w-60 rounded-xl text-white flex flex-row items-center justify-center'>
-                          <div className="flex items-center justify-center">
-              <span className="animate-spin h-8 w-8 border-b-2 border-orange-500 rounded-full"></span>
-            </div>
-                                    </button>
-                                ) : (
-                                    <button onClick={() => requestPayment()} className='bg-green-500 h-12 w-60 rounded-xl text-white'>Complete payment</button>
-                                )
-                            }
-                    
-            </div>
+              // />
+              <div className="w-full py-4 flex flex-row justify-center items-center">
+                {paying ? (
+                  <button className="bg-orange-500 h-12 w-60 rounded-xl text-white flex flex-row items-center justify-center">
+                    <div className="flex items-center justify-center">
+                      <span className="animate-spin h-8 w-8 border-b-2 border-orange-500 rounded-full"></span>
+                    </div>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => requestPayment()}
+                    className="bg-green-500 h-12 w-60 rounded-xl text-white"
+                  >
+                    Complete payment
+                  </button>
+                )}
+              </div>
             ) : (
               <div className="text-center text-gray-500 py-4">
                 PayPal integration coming soon...
@@ -299,8 +321,18 @@ const CheckoutModal = ({ isOpen, onClose }) => {
 
           <div className="px-4 py-3 bg-gray-50 border-t">
             <div className="flex items-center justify-center text-sm text-gray-500">
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              <svg
+                className="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
               </svg>
               Secure payment powered by Stripe
             </div>
@@ -308,24 +340,24 @@ const CheckoutModal = ({ isOpen, onClose }) => {
         </div>
       </div>
       <div className="w-full">
-         {open && (
-                            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start p-10 z-50 overflow-hidden">
-                                <div className="bg-white rounded-xl shadow-lg w-full max-w-4xl h-[90vh] overflow-hidden p-5 relative">
-                                    <button
-                                        onClick={closeModal}
-                                        className="absolute top-3 right-3 text-red-600 font-bold text-xl"
-                                    >
-                                        &times;
-                                    </button>
+        {open && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start p-10 z-50 overflow-hidden">
+            <div className="bg-white rounded-xl shadow-lg w-full max-w-4xl h-[90vh] overflow-hidden p-5 relative">
+              <button
+                onClick={closeModal}
+                className="absolute top-3 right-3 text-red-600 font-bold text-xl"
+              >
+                &times;
+              </button>
 
-                                    <iframe
-                                        src={url}
-                                        className="w-full h-full rounded-b-xl border-none"
-                                        title="Mini Browser"
-                                    />
-                                </div>
-                            </div>
-                        )}
+              <iframe
+                src={url}
+                className="w-full h-full rounded-b-xl border-none"
+                title="Mini Browser"
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <PesapalModal
@@ -337,4 +369,4 @@ const CheckoutModal = ({ isOpen, onClose }) => {
   );
 };
 
-export default CheckoutModal; 
+export default CheckoutModal;

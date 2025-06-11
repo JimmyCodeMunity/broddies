@@ -31,6 +31,12 @@ export const NavbarDemo = () => {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { userdata, isUserAuthenticated, logout } = useContext(AuthContext);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
   console.log("user", userdata);
 
   return (
