@@ -30,12 +30,14 @@ const ProductCard2 = ({ prod }) => {
   return (
     <div>
       <div className="sm:w-72 w-full bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
-        <Link className="" to={`/artview/${prod._id}`} state={{ prod }}>
-          <img
-            src={`https://server.broddiescollection.com/${prod?.image}`}
-            alt="Product"
-            className="md:h-80 h-40 w-full object-cover rounded-t-xl"
-          />
+        <div className="">
+          <Link to={`/artview/${prod._id}`} state={{ prod }}>
+            <img
+              src={`https://server.broddiescollection.com/${prod?.image}`}
+              alt="Product"
+              className="md:h-80 h-40 w-full object-cover rounded-t-xl"
+            />
+          </Link>
           <div className="px-4 py-3 w-full">
             <span className="text-gray-400 mr-3 text-xs">{prod?.category}</span>
             <p className="text-lg font-bold text-black truncate block capitalize">
@@ -77,7 +79,7 @@ const ProductCard2 = ({ prod }) => {
               )}
             </div>
           </div>
-        </Link>
+        </div>
       </div>
     </div>
   );
