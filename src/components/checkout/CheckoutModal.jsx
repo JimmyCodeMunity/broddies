@@ -55,7 +55,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
       }));
 
       const response = await fetch(
-        `${serverurl}/api/v1/stripe/create-payment-intent`,
+        `https://server.broddiescollection.com/api/v1/stripe/create-payment-intent`,
         {
           method: "POST",
           headers: {
@@ -91,7 +91,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
     setPesastart(true);
     try {
       const response = await axios.post(
-        `${serverurl}/api/v1/payments/pesapal/requestpayment`,
+        `https://server.broddiescollection.com/api/v1/payments/pesapal/requestpayment`,
         {
           amount: cartTotal,
           userId: userdata?._id,
@@ -139,7 +139,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
     console.log("checking", orderTrackingId);
     try {
       const response = await axios.post(
-        `${serverurl}/api/v1/payments/pesapal/checkpayment`,
+        `https://server.broddiescollection.com/api/v1/payments/pesapal/checkpayment`,
         { orderTrackingId, cartItems, userId: userdata?._id }
       );
       const data = response.data;
