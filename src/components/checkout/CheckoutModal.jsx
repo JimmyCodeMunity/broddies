@@ -33,15 +33,65 @@ const CheckoutModal = ({ isOpen, onClose }) => {
   const [code, setCode] = useState(null);
   const [paymentacc, setPaymentacc] = useState(null);
   const [method, setMethod] = useState(null);
+  const [pesastart, setPesastart] = useState(false);
 
   const intervalRef = useRef(null);
   const [orderTrackingId, setOrderTrackingId] = useState("");
   const [paymentComplete, setPaymentComplete] = useState(false);
+
+  const [stripeLoading, setStripeLoading] = useState(false);
+
+  const requestStripePayment = async () => {
+    if (selectedMethod !== "stripe") return;
+    const serverurl = "https://server.broddiescollection.com";
+
+    setStripeLoading(true);
+    try {
+      // Create condensed cart data with only essential information
+      const condensedCartItems = cartItems.map((item) => ({
+        _id: item._id,
+        quantity: item.quantity,
+        price: parseFloat(item.price),
+      }));
+
+      const response = await fetch(
+        `${serverurl}/api/v1/stripe/create-payment-intent`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            amount: cartTotal,
+            currency: "usd",
+            userId: userdata?._id,
+            cartItems: condensedCartItems,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to create payment intent");
+      }
+
+      const data = await response.json();
+      setClientSecret(data.paymentIntent);
+    } catch (error) {
+      console.error("Payment initialization failed:", error);
+      toast.error("Failed to initialize payment");
+    } finally {
+      setStripeLoading(false);
+    }
+  };
+
   const requestPayment = async () => {
+    if (selectedMethod !== "pesapal") return;
+
     setLoading(true);
+    setPesastart(true);
     try {
       const response = await axios.post(
-        "https://server.broddiescollection.com/api/v1/payments/pesapal/requestpayment",
+        `${serverurl}/api/v1/payments/pesapal/requestpayment`,
         {
           amount: cartTotal,
           userId: userdata?._id,
@@ -55,23 +105,21 @@ const CheckoutModal = ({ isOpen, onClose }) => {
 
       if (data.status == "200") {
         setPaying(true);
+        setPesastart(false);
         const redirect = data.redirect_url;
         setUrl(redirect);
         setOpen(true);
         console.log("order", data.order_tracking_id);
         const orderTrackingId = data.order_tracking_id;
-        // setOrderTrackingId(orderTrackingId)
-        // await checkStatus(orderTrackingId)
         // Start polling every 3 seconds
-        // intervalRef.current = setInterval(() => {
-        //     console.log("checking now...")
-        //     checkStatus(orderTrackingId)
-        // }, 3000)
-        // redirect to that page
-
+        intervalRef.current = setInterval(() => {
+          console.log("checking now...");
+          checkStatus(orderTrackingId);
+        }, 3000);
         console.log("payment request made");
       }
     } catch (error) {
+      setPesastart(false);
       console.log("error requesting payment", error);
     }
   };
@@ -91,15 +139,16 @@ const CheckoutModal = ({ isOpen, onClose }) => {
     console.log("checking", orderTrackingId);
     try {
       const response = await axios.post(
-        "http://server.broddiescollection.com/api/v1/payments/pesapal/checkpayment",
-        { orderTrackingId }
+        `${serverurl}/api/v1/payments/pesapal/checkpayment`,
+        { orderTrackingId, cartItems, userId: userdata?._id }
       );
       const data = response.data;
+      console.log("call", data.pesapalStatus.status_code);
       console.log("transaction state", data.status_code);
       // return
 
       // Example: assume data.status becomes "COMPLETED" when payment is done
-      if (data.status_code === 1) {
+      if (data.pesapalStatus.status_code === 1) {
         clearInterval(intervalRef.current);
         setPaymentComplete(true);
         setPaying(false);
@@ -109,9 +158,11 @@ const CheckoutModal = ({ isOpen, onClose }) => {
         setPaymentacc(data.payment_account);
         setMethod(data.payment_method);
         toast.success("Payment completed successfully");
+        onClose(); // Close the checkout modal when payment succeeds
       }
     } catch (error) {
       console.log("error checking", error);
+      setPesastart(false);
       clearInterval(intervalRef.current);
       setPaying(false);
     }
@@ -124,51 +175,6 @@ const CheckoutModal = ({ isOpen, onClose }) => {
       }
     };
   }, []);
-
-  useEffect(() => {
-    // Create PaymentIntent as soon as the modal opens
-    if (isOpen && cartTotal > 0) {
-      const createPaymentIntent = async () => {
-        try {
-          // Create condensed cart data with only essential information
-          const condensedCartItems = cartItems.map((item) => ({
-            _id: item._id,
-            quantity: item.quantity,
-            price: parseFloat(item.price),
-          }));
-
-          const response = await fetch(
-            "https://server.broddiescollection.com/api/v1/stripe/create-payment-intent",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                amount: cartTotal,
-                currency: "usd",
-                userId: userdata?._id,
-                cartItems: condensedCartItems, // Send only essential cart data
-              }),
-            }
-          );
-
-          if (!response.ok) {
-            throw new Error("Failed to create payment intent");
-          }
-
-          const data = await response.json();
-          setClientSecret(data.paymentIntent);
-        } catch (error) {
-          console.error("Payment initialization failed:", error);
-          toast.error("Failed to initialize payment");
-          onClose();
-        }
-      };
-
-      createPaymentIntent();
-    }
-  }, [isOpen, cartTotal, userdata?._id, cartItems]);
 
   const paymentMethods = [
     {
@@ -263,7 +269,10 @@ const CheckoutModal = ({ isOpen, onClose }) => {
                       selected={selectedMethod === method.id}
                       onSelect={
                         method.active
-                          ? setSelectedMethod
+                          ? () => {
+                              setSelectedMethod(method.id);
+                              setClientSecret(""); // Reset client secret when switching methods
+                            }
                           : () => toast.info("Coming soon!")
                       }
                     />
@@ -274,33 +283,45 @@ const CheckoutModal = ({ isOpen, onClose }) => {
           </div>
 
           <div className="bg-gray-50 px-4 py-3">
-            {selectedMethod === "stripe" && clientSecret ? (
-              <Elements stripe={stripePromise} options={options}>
-                <StripeCheckoutForm
-                  amount={cartTotal}
-                  cartItems={cartItems}
-                  onSuccess={handleSuccess}
-                />
-              </Elements>
-            ) : selectedMethod === "stripe" ? (
-              <div className="text-center py-4">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
-                <p className="mt-2 text-gray-600">Initializing payment...</p>
-              </div>
+            {selectedMethod === "stripe" ? (
+              clientSecret ? (
+                <Elements stripe={stripePromise} options={options}>
+                  <StripeCheckoutForm
+                    amount={cartTotal}
+                    cartItems={cartItems}
+                    onSuccess={handleSuccess}
+                  />
+                </Elements>
+              ) : (
+                <div className="w-full py-4 flex flex-row justify-center items-center">
+                  {stripeLoading ? (
+                    <button
+                      disabled
+                      className="bg-blue-500 h-12 w-60 rounded-xl text-white flex flex-row items-center justify-center"
+                    >
+                      <div className="flex items-center justify-center">
+                        <span className="animate-spin h-8 w-8 border-b-2 border-white rounded-full"></span>
+                      </div>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={requestStripePayment}
+                      className="bg-blue-500 h-12 w-60 rounded-xl text-white hover:bg-blue-600 transition-colors"
+                    >
+                      Initialize Payment
+                    </button>
+                  )}
+                </div>
+              )
             ) : selectedMethod === "pesapal" ? (
-              // <PesapalCheckoutForm
-              //   amount={cartTotal}
-              //   cartItems={cartItems}
-              //   onSuccess={handleSuccess}
-              //   onClose={onClose}
-              //   userId={userdata?._id}
-              //   onOpenModal={handlePesapalModalOpen}
-              // />
               <div className="w-full py-4 flex flex-row justify-center items-center">
-                {paying ? (
-                  <button className="bg-orange-500 h-12 w-60 rounded-xl text-white flex flex-row items-center justify-center">
+                {pesastart ? (
+                  <button
+                    disabled
+                    className="bg-green-500 h-12 w-60 rounded-xl text-white flex flex-row items-center justify-center"
+                  >
                     <div className="flex items-center justify-center">
-                      <span className="animate-spin h-8 w-8 border-b-2 border-orange-500 rounded-full"></span>
+                      <span className="animate-spin h-8 w-8 border-b-2 border-white rounded-full"></span>
                     </div>
                   </button>
                 ) : (
@@ -334,7 +355,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
                   d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                 />
               </svg>
-              Secure payment powered by Stripe
+              Secure payment
             </div>
           </div>
         </div>

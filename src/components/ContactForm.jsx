@@ -1,6 +1,49 @@
-import React from "react";
-
+import React, { useContext, useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { Send } from "lucide-react";
+import { AuthContext } from "../context/AuthContext";
+import Loader from "./Loader";
 const ContactForm = () => {
+  const { userdata } = useContext(AuthContext);
+  const [name, setName] = useState(userdata?.username || "");
+  const [email, setEmail] = useState("test@gmail.com");
+  const [phone, setPhone] = useState("45678923");
+  const [message, setMessage] = useState("a test message");
+  const [loading, setLoading] = useState(false);
+
+  const handleContact = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      if (!name || !email || !phone || !message) {
+        toast.error("Please fill all fields");
+        return;
+      } else {
+        const response = await axios.post(
+          "https://server.broddiescollection.com/api/v1/user/contactadmin",
+          {
+            name,
+            email,
+            phone,
+            message,
+          }
+        );
+        const data = response.data;
+        toast.success("Message sent successfully");
+        setName("");
+        setEmail("");
+        setPhone("");
+        setMessage("");
+        setLoading(false);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Error sending message");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="w-full bg-black">
       <section class="py-24 bg-black text-white">
@@ -79,75 +122,52 @@ const ContactForm = () => {
             </div>
 
             <div class="bg-zinc-900 p-5 lg:p-11 lg:rounded-r-2xl rounded-2xl">
-              <h2 class="text-indigo-500 font-manrope text-4xl font-semibold leading-10 mb-11">
-                Send Us A Message
-              </h2>
-              <input
-                type="text"
-                class="w-full h-12 text-white placeholder-gray-400 bg-transparent text-lg font-normal leading-7 rounded-full border border-gray-600 focus:outline-none pl-4 mb-10"
-                placeholder="Name"
-              />
-              <input
-                type="text"
-                class="w-full h-12 text-white placeholder-gray-400 bg-transparent text-lg font-normal leading-7 rounded-full border border-gray-600 focus:outline-none pl-4 mb-10"
-                placeholder="Email"
-              />
-              <input
-                type="text"
-                class="w-full h-12 text-white placeholder-gray-400 bg-transparent text-lg font-normal leading-7 rounded-full border border-gray-600 focus:outline-none pl-4 mb-10"
-                placeholder="Phone"
-              />
+              {loading ? (
+                <Loader />
+              ) : (
+                <form action="" method="post" onSubmit={handleContact}>
+                  <h2 class="text-indigo-500 font-manrope text-4xl font-semibold leading-10 mb-11">
+                    Send Us A Message
+                  </h2>
+                  <input
+                    type="text"
+                    class="w-full h-12 text-white placeholder-gray-400 bg-transparent text-lg font-normal leading-7 rounded-full border border-gray-600 focus:outline-none pl-4 mb-10"
+                    placeholder="Name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                  <input
+                    type="text"
+                    class="w-full h-12 text-white placeholder-gray-400 bg-transparent text-lg font-normal leading-7 rounded-full border border-gray-600 focus:outline-none pl-4 mb-10"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                  <input
+                    type="text"
+                    class="w-full h-12 text-white placeholder-gray-400 bg-transparent text-lg font-normal leading-7 rounded-full border border-gray-600 focus:outline-none pl-4 mb-10"
+                    placeholder="Phone"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                  />
 
-              <div class="mb-10">
-                <h4 class="text-gray-400 text-lg font-normal leading-7 mb-4">
-                  Preferred method of communication
-                </h4>
-                <div class="flex">
-                  <div class="flex items-center mr-11">
-                    <input
-                      id="radio-group-1"
-                      type="radio"
-                      name="radio-group"
-                      class="hidden peer"
-                    />
-                    <label
-                      for="radio-group-1"
-                      class="flex items-center cursor-pointer text-gray-400 text-base font-normal leading-6 peer-checked:text-indigo-500"
-                    >
-                      <span class="border border-gray-600 rounded-full mr-2 w-4 h-4 flex items-center justify-center">
-                        <span class="w-2 h-2 bg-indigo-500 rounded-full scale-0 peer-checked:scale-100 transition-transform"></span>
-                      </span>{" "}
-                      Email
-                    </label>
-                  </div>
-                  <div class="flex items-center">
-                    <input
-                      id="radio-group-2"
-                      type="radio"
-                      name="radio-group"
-                      class="hidden peer"
-                    />
-                    <label
-                      for="radio-group-2"
-                      class="flex items-center cursor-pointer text-gray-400 text-base font-normal leading-6 peer-checked:text-indigo-500"
-                    >
-                      <span class="border border-gray-600 rounded-full mr-2 w-4 h-4 flex items-center justify-center">
-                        <span class="w-2 h-2 bg-indigo-500 rounded-full scale-0 peer-checked:scale-100 transition-transform"></span>
-                      </span>{" "}
-                      Phone
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              <input
-                type="text"
-                class="w-full h-12 text-white placeholder-gray-400 bg-transparent text-lg font-normal leading-7 rounded-full border border-gray-600 focus:outline-none pl-4 mb-10"
-                placeholder="Message"
-              />
-              <button class="w-full h-12 text-white text-base font-semibold leading-6 rounded-full transition-all duration-700 hover:bg-indigo-800 bg-indigo-600 shadow-sm">
-                Send
-              </button>
+                  <textarea
+                    id="message"
+                    rows="4"
+                    class="block mb-4 p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Write your thoughts here..."
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                  ></textarea>
+                  <button
+                    type="submit"
+                    class="w-full h-12 text-white flex items-center justify-center gap-2 text-base font-semibold leading-6 rounded-full transition-all duration-700 hover:bg-neutral-800 bg-black shadow-sm"
+                  >
+                    <Send color="white" size={15} />
+                    Send
+                  </button>
+                </form>
+              )}
             </div>
           </div>
         </div>

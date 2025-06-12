@@ -123,13 +123,9 @@ export const AuthProvider = ({ children }) => {
   ) => {
     try {
       console.log("data tbu", userid, username, email);
-      // if (token) {
-      // const response = await axios.post(
-      //   `http://localhost:5000/api/v1/user/updateuser`,
-      //   { userid, username, email, password, phone, address }
-      // );
+
       const response = await axios.post(
-        "http://localhost:5000/api/v1/user/updateuser",
+        "https://server.broddiescollection.com/api/v1/user/updateuser",
         {
           userid,
           username,
