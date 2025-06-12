@@ -7,9 +7,9 @@ import Loader from "./Loader";
 const ContactForm = () => {
   const { userdata } = useContext(AuthContext);
   const [name, setName] = useState(userdata?.username || "");
-  const [email, setEmail] = useState("test@gmail.com");
-  const [phone, setPhone] = useState("45678923");
-  const [message, setMessage] = useState("a test message");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleContact = async (e) => {
